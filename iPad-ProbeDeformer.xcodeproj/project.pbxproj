@@ -1,0 +1,362 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2AF1371F18CA2900007E999A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AF1371E18CA2900007E999A /* Foundation.framework */; };
+		2AF1372118CA2900007E999A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AF1372018CA2900007E999A /* CoreGraphics.framework */; };
+		2AF1372318CA2900007E999A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AF1372218CA2900007E999A /* UIKit.framework */; };
+		2AF1372518CA2900007E999A /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AF1372418CA2900007E999A /* GLKit.framework */; };
+		2AF1372718CA2900007E999A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AF1372618CA2900007E999A /* OpenGLES.framework */; };
+		2AF1372D18CA2900007E999A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2AF1372B18CA2900007E999A /* InfoPlist.strings */; };
+		2AF1372F18CA2900007E999A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AF1372E18CA2900007E999A /* main.m */; };
+		2AF1373318CA2900007E999A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AF1373218CA2900007E999A /* AppDelegate.m */; };
+		2AF1373918CA2900007E999A /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2AF1373718CA2900007E999A /* Main_iPad.storyboard */; };
+		2AF1374018CA2900007E999A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AF1373F18CA2900007E999A /* ViewController.m */; };
+		2AF1374218CA2900007E999A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2AF1374118CA2900007E999A /* Images.xcassets */; };
+		2AF1376318CA2986007E999A /* ImageVertices.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AF1376218CA2986007E999A /* ImageVertices.m */; };
+		2AF1376918CA29C9007E999A /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 2AF1376818CA29C9007E999A /* Default.png */; };
+		2AF1376C18CA2A94007E999A /* Probe.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AF1376B18CA2A94007E999A /* Probe.m */; };
+		2AF1376E18CA3073007E999A /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 2AF1376D18CA3073007E999A /* arrow.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2AF1371B18CA2900007E999A /* iPad-ProbeDeformer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iPad-ProbeDeformer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2AF1371E18CA2900007E999A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		2AF1372018CA2900007E999A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		2AF1372218CA2900007E999A /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		2AF1372418CA2900007E999A /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		2AF1372618CA2900007E999A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		2AF1372A18CA2900007E999A /* iPad-ProbeDeformer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "iPad-ProbeDeformer-Info.plist"; sourceTree = "<group>"; };
+		2AF1372C18CA2900007E999A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		2AF1372E18CA2900007E999A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2AF1373018CA2900007E999A /* iPad-ProbeDeformer-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iPad-ProbeDeformer-Prefix.pch"; sourceTree = "<group>"; };
+		2AF1373118CA2900007E999A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		2AF1373218CA2900007E999A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		2AF1373818CA2900007E999A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
+		2AF1373E18CA2900007E999A /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		2AF1373F18CA2900007E999A /* ViewController.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = ViewController.m; sourceTree = "<group>"; };
+		2AF1374118CA2900007E999A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		2AF1374818CA2900007E999A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		2AF1376118CA2986007E999A /* ImageVertices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageVertices.h; sourceTree = "<group>"; };
+		2AF1376218CA2986007E999A /* ImageVertices.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = ImageVertices.m; sourceTree = "<group>"; };
+		2AF1376618CA29BF007E999A /* DCN.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = DCN.h; path = "iPad-ProbeDeformer/DCN.h"; sourceTree = SOURCE_ROOT; };
+		2AF1376818CA29C9007E999A /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		2AF1376A18CA2A94007E999A /* Probe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Probe.h; sourceTree = "<group>"; };
+		2AF1376B18CA2A94007E999A /* Probe.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Probe.m; sourceTree = "<group>"; };
+		2AF1376D18CA3073007E999A /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2AF1371818CA2900007E999A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2AF1372718CA2900007E999A /* OpenGLES.framework in Frameworks */,
+				2AF1372118CA2900007E999A /* CoreGraphics.framework in Frameworks */,
+				2AF1372318CA2900007E999A /* UIKit.framework in Frameworks */,
+				2AF1372518CA2900007E999A /* GLKit.framework in Frameworks */,
+				2AF1371F18CA2900007E999A /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2AF1371218CA2900007E999A = {
+			isa = PBXGroup;
+			children = (
+				2AF1372818CA2900007E999A /* iPad-ProbeDeformer */,
+				2AF1371D18CA2900007E999A /* Frameworks */,
+				2AF1371C18CA2900007E999A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2AF1371C18CA2900007E999A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2AF1371B18CA2900007E999A /* iPad-ProbeDeformer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2AF1371D18CA2900007E999A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2AF1371E18CA2900007E999A /* Foundation.framework */,
+				2AF1372018CA2900007E999A /* CoreGraphics.framework */,
+				2AF1372218CA2900007E999A /* UIKit.framework */,
+				2AF1372418CA2900007E999A /* GLKit.framework */,
+				2AF1372618CA2900007E999A /* OpenGLES.framework */,
+				2AF1374818CA2900007E999A /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2AF1372818CA2900007E999A /* iPad-ProbeDeformer */ = {
+			isa = PBXGroup;
+			children = (
+				2AF1373118CA2900007E999A /* AppDelegate.h */,
+				2AF1373218CA2900007E999A /* AppDelegate.m */,
+				2AF1376618CA29BF007E999A /* DCN.h */,
+				2AF1376A18CA2A94007E999A /* Probe.h */,
+				2AF1376B18CA2A94007E999A /* Probe.m */,
+				2AF1376118CA2986007E999A /* ImageVertices.h */,
+				2AF1376218CA2986007E999A /* ImageVertices.m */,
+				2AF1373718CA2900007E999A /* Main_iPad.storyboard */,
+				2AF1373E18CA2900007E999A /* ViewController.h */,
+				2AF1373F18CA2900007E999A /* ViewController.m */,
+				2AF1374118CA2900007E999A /* Images.xcassets */,
+				2AF1372918CA2900007E999A /* Supporting Files */,
+			);
+			path = "iPad-ProbeDeformer";
+			sourceTree = "<group>";
+		};
+		2AF1372918CA2900007E999A /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2AF1376D18CA3073007E999A /* arrow.png */,
+				2AF1376818CA29C9007E999A /* Default.png */,
+				2AF1372A18CA2900007E999A /* iPad-ProbeDeformer-Info.plist */,
+				2AF1372B18CA2900007E999A /* InfoPlist.strings */,
+				2AF1372E18CA2900007E999A /* main.m */,
+				2AF1373018CA2900007E999A /* iPad-ProbeDeformer-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2AF1371A18CA2900007E999A /* iPad-ProbeDeformer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2AF1375818CA2900007E999A /* Build configuration list for PBXNativeTarget "iPad-ProbeDeformer" */;
+			buildPhases = (
+				2AF1371718CA2900007E999A /* Sources */,
+				2AF1371818CA2900007E999A /* Frameworks */,
+				2AF1371918CA2900007E999A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "iPad-ProbeDeformer";
+			productName = "iPad-ProbeDeformer";
+			productReference = 2AF1371B18CA2900007E999A /* iPad-ProbeDeformer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2AF1371318CA2900007E999A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = "mcg-q";
+				TargetAttributes = {
+					2AF1371A18CA2900007E999A = {
+						DevelopmentTeam = H9YEM46EC3;
+					};
+				};
+			};
+			buildConfigurationList = 2AF1371618CA2900007E999A /* Build configuration list for PBXProject "iPad-ProbeDeformer" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2AF1371218CA2900007E999A;
+			productRefGroup = 2AF1371C18CA2900007E999A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2AF1371A18CA2900007E999A /* iPad-ProbeDeformer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2AF1371918CA2900007E999A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2AF1373918CA2900007E999A /* Main_iPad.storyboard in Resources */,
+				2AF1376E18CA3073007E999A /* arrow.png in Resources */,
+				2AF1374218CA2900007E999A /* Images.xcassets in Resources */,
+				2AF1372D18CA2900007E999A /* InfoPlist.strings in Resources */,
+				2AF1376918CA29C9007E999A /* Default.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2AF1371718CA2900007E999A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2AF1376C18CA2A94007E999A /* Probe.m in Sources */,
+				2AF1374018CA2900007E999A /* ViewController.m in Sources */,
+				2AF1373318CA2900007E999A /* AppDelegate.m in Sources */,
+				2AF1376318CA2986007E999A /* ImageVertices.m in Sources */,
+				2AF1372F18CA2900007E999A /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		2AF1372B18CA2900007E999A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2AF1372C18CA2900007E999A /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		2AF1373718CA2900007E999A /* Main_iPad.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2AF1373818CA2900007E999A /* Base */,
+			);
+			name = Main_iPad.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		2AF1375618CA2900007E999A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "6C129D15-C4ED-435D-9D39-AC2FDC980393";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2AF1375718CA2900007E999A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				PROVISIONING_PROFILE = "6C129D15-C4ED-435D-9D39-AC2FDC980393";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2AF1375918CA2900007E999A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "iPad-ProbeDeformer/iPad-ProbeDeformer-Prefix.pch";
+				INFOPLIST_FILE = "iPad-ProbeDeformer/iPad-ProbeDeformer-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		2AF1375A18CA2900007E999A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "iPad-ProbeDeformer/iPad-ProbeDeformer-Prefix.pch";
+				INFOPLIST_FILE = "iPad-ProbeDeformer/iPad-ProbeDeformer-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2AF1371618CA2900007E999A /* Build configuration list for PBXProject "iPad-ProbeDeformer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2AF1375618CA2900007E999A /* Debug */,
+				2AF1375718CA2900007E999A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2AF1375818CA2900007E999A /* Build configuration list for PBXNativeTarget "iPad-ProbeDeformer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2AF1375918CA2900007E999A /* Debug */,
+				2AF1375A18CA2900007E999A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2AF1371318CA2900007E999A /* Project object */;
+}
