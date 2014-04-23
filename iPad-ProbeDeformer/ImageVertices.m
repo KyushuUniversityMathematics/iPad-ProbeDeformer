@@ -140,19 +140,20 @@
     [newprobe initialise];
     newprobe.weight = (float *)malloc(numVertices*sizeof(float));
     for(int i=0;i<numVertices;i++){
-        newprobe.weight[i] = makeWeight(newprobe.ix, newprobe.iy, origVertex[i].dual[0], origVertex[i].dual[1]);
+        newprobe.weight[i] = computeWeight(newprobe.ix, newprobe.iy, origVertex[i].dual[0], origVertex[i].dual[1]);
     }
     [probes addObject:newprobe];
 }
 
 // weight computation
-double makeWeight(double x0,double y0,double x1,double y1){
-    double d = (x0-x1)*(x0-x1)+(y0-y1)*(y0-y1);
+float computeWeight(float x0,float y0,float x1,float y1){
+    float d = (x0-x1)*(x0-x1)+(y0-y1)*(y0-y1);
     if (d == 0) {
         return HUGE_VALF;
     }
     return 1.0/d;
 }
+
 // initialose mesh vertices as DCN's
 -(void)initOrigVertices{
     int count=0;
@@ -168,11 +169,13 @@ double makeWeight(double x0,double y0,double x1,double y1){
         }
     }
 }
+
 // initialize probes
 -(void) initializeProbes{
     for (Probe *probe in probes)
         [probe initialise];
 }
+
 // freeze probes
 -(void) freezeProbes{
     DCN<float> v;

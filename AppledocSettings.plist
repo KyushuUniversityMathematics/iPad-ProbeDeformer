@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>--project-name</key>
+    <string>iPad Probe Deformer</string>
+    <key>--project-company</key>
+    <string>MCG-Q</string>
+    <key>--company-id</key>
+    <string>jp.lasm</string>
+    <key>--output</key>
+    <string>appledoc</string>
+    <key>--no-create-docset</key>
+    <true/>
+    <key>--keep-undocumented-objects</key>
+    <true/>
+    <key>--keep-undocumented-members</key>
+    <true/>
+    <key>--search-undocumented-doc</key>
+    <true/>
+    <key>--ignore</key>
+    <array>
+        <string>.m</string>
+    </array>
+    <key>--exit-threshold</key>
+    <integer>1</integer>
+</dict>
+</plist>

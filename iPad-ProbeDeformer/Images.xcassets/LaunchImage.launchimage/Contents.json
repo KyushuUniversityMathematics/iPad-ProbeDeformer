@@ -5,14 +5,15 @@
       "idiom" : "iphone",
       "extent" : "full-screen",
       "minimum-system-version" : "7.0",
+      "filename" : "iOSシミュレータのスクリーンショット 2014.03.20 11.38.49.png",
       "scale" : "2x"
     },
     {
       "orientation" : "portrait",
       "idiom" : "iphone",
-      "subtype" : "retina4",
       "extent" : "full-screen",
       "minimum-system-version" : "7.0",
+      "subtype" : "retina4",
       "scale" : "2x"
     },
     {
@@ -20,6 +21,7 @@
       "idiom" : "ipad",
       "extent" : "full-screen",
       "minimum-system-version" : "7.0",
+      "filename" : "iOSシミュレータのスクリーンショット 2014.03.20 11.40.44.png",
       "scale" : "1x"
     },
     {
@@ -27,6 +29,7 @@
       "idiom" : "ipad",
       "extent" : "full-screen",
       "minimum-system-version" : "7.0",
+      "filename" : "iOSシミュレータのスクリーンショット 2014.03.20 11.41.16.png",
       "scale" : "1x"
     },
     {
