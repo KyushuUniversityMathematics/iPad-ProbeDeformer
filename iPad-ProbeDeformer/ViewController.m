@@ -1,6 +1,6 @@
 //
 //  ViewController.m
-//  iPad-ShapeMatching
+//  
 //  Copyright (c) 2013 G. Matsuda, S. Kaji, H. Ochiai, and Y. Mizoguchi
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -140,7 +140,7 @@
     ratio_height = gl_height / screen.height;
     ratio_width = gl_width / screen.width;
     // compute touch radius for each vertex
-    mainImage.probeRadius = [UIScreen mainScreen].bounds.size.height/30 * ratio;
+    mainImage.probeRadius = mainImage.image_width/(float)mainImage.horizontalDivisions;
     
     GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(-gl_width/2.0, gl_width/2.0, -gl_height/2.0, gl_height/2.0, -1024, 1024);
     self.effect.transform.projectionMatrix = projectionMatrix;
@@ -351,7 +351,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             if(selectedProbe != NULL){
                 float scale = [sender scale];
                 [sender setScale:1];
-                selectedProbe.radius *= scale;
+                selectedProbe.radius = fmax(selectedProbe.radius * scale, 0.1);
                 [selectedProbe computeOrigVertex];
                 [mainImage deform];
             }
@@ -386,10 +386,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         imagePicker.allowsEditing = YES;
         imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone){
-            //iPhone の場合
+            //iPhone
             [self presentViewController:imagePicker animated:YES completion:nil];
         }else{
-            //iPadの場合
+            //iPad
             if(imagePopController!=NULL){
                 [imagePopController dismissPopoverAnimated:YES];
             }

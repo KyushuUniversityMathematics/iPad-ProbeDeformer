@@ -1,6 +1,6 @@
 //
 //  ViewController.h
-//  iPad-ShapeMatching
+//  
 //  Copyright (c) 2013 G. Matsuda, S. Kaji, H. Ochiai, and Y. Mizoguchi
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy

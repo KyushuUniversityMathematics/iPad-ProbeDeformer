@@ -6,8 +6,9 @@
  * @section LICENSE The MIT License
  * @section DESCRIPTION
  * Library for Anti-commutative Dual Complex Numbers (DCN, for short)
- * Look at ??? for the detail
- *
+ * For the detail, look at
+ * G. Matsuda, S. Kaji, and H. Ochiai, Anti-commutative Dual Complex Numbers and 2D Rigid Transformation,
+ * Mathematical Progress in Expressive Image Synthesis I, Springer-Japan, 2014.
 */
 
 #pragma once
