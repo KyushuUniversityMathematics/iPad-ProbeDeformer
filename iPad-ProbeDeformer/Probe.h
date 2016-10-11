@@ -24,16 +24,19 @@
 
 
 #import <Foundation/Foundation.h>
+#include "Eigen/Dense"
 #include "DCN.h"
 
+using namespace Eigen;
+
 @interface Probe : NSObject{
-    @public
-    GLfloat vertices[8];
-    GLfloat textureCoords[8];
-    // dcn of initial vertex position
-    DCN<float> origVertex[4];
     // dcn of transformation
     DCN<float> dcn;
+    // dcn of initial vertex position    
+    DCN<float> origVertex[4];
+    @public
+    // effect for each vertex of mesh
+    VectorXf weight;
 }
 
 // initial position
@@ -46,13 +49,16 @@
 @property GLfloat y;
 @property float theta;
 @property float radius;
+@property int closestPt;
 
-// weights to image vertices
-@property float *weight;
+@property GLfloat *vertices;
+@property GLfloat *textureCoords;
+
 
 // init
 - (id)copyWithZone:(NSZone*)zone;
 - (void)dealloc;
+- (void)initWithX:(float) _ix Y:(float)_iy Radius:(float)_radius;
 
 // set DCN by difference
 - (void)setPosDx:(GLfloat)dx Dy:(GLfloat)dy Dtheta:(GLfloat)dtheta;
@@ -63,8 +69,6 @@
 - (void)computeOrigVertex;
 // freeze current state
 - (void)freeze;
-// Revert to the initial state
-- (void)initialise;
 // DLB interpolation
 + (DCN<float>)DLB:(NSMutableArray*)probes Weight:(int)w;
 // distance to given point

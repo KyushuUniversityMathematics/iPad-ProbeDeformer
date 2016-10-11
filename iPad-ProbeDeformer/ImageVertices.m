@@ -31,13 +31,11 @@
 @synthesize verticalDivisions;
 @synthesize horizontalDivisions;
 @synthesize indexArrsize;
-@synthesize numVertices;
+@synthesize numVertices, wm, constraintWeight;
+@synthesize image_width, image_height;
+@synthesize probes, probeRadius;
+@synthesize texture, verticesArr, vertices, textureCoordsArr, vertexIndices;
 
-@synthesize image_width;
-@synthesize image_height;
-
-@synthesize probes;
-@synthesize probeRadius;
 
 /** copyWithZone **/
 - (id)copyWithZone:(NSZone *)zone{
@@ -60,18 +58,20 @@
     free(textureCoordsArr);
     free(vertexIndices);
     free(vertices);
-    delete origVertex;
+    delete[] origVertex;
 }
 
 // init
-- (ImageVertices*)initWithUIImage:(UIImage*)uiImage VerticalDivisions:(GLuint)lverticalDivisions HorizontalDivisions:(GLuint)lhorizontalDivisions{
+- (ImageVertices*)initWithVDiv:(GLuint)lverticalDivisions HDiv:(GLuint)lhorizontalDivisions{
     if (self = [super init]) {
-        self.verticalDivisions = lverticalDivisions;
-        self.horizontalDivisions = lhorizontalDivisions;
+        verticalDivisions = lverticalDivisions;
+        horizontalDivisions = lhorizontalDivisions;
         indexArrsize = verticalDivisions * (horizontalDivisions+1) * 2;
         numVertices = (verticalDivisions+1) * (horizontalDivisions+1);
-        image_width = (float)uiImage.size.width;
-        image_height = (float)uiImage.size.height;
+        probeRadius = 2.0*image_width/(float)horizontalDivisions;
+        constraintWeight = numVertices * 1.0;
+        wm = EUCLIDEAN;
+        [self computeLaplacian];
 
         //malloc
         vertices = (GLfloat *)malloc((verticalDivisions + 1)*(horizontalDivisions + 1)*2*sizeof(GLfloat));
@@ -103,10 +103,32 @@
                 textureCoordsArr[count++] = currY;
             }
         }
-        [self initOrigVertices];
-        [self deform];
     }
     return self;
+}
+
+-(void) loadImage:(UIImage*)pImage{
+    NSError *error;
+    NSDictionary* options = @{GLKTextureLoaderOriginBottomLeft: @YES};
+    //resize
+    CGFloat oldWidth = pImage.size.width;
+    CGFloat oldHeight = pImage.size.height;
+    CGFloat scaleFactor = (oldWidth > oldHeight) ? 1024 / oldWidth : 1024 / oldHeight;
+    CGSize size = CGSizeMake(oldWidth * scaleFactor, oldHeight * scaleFactor);
+    UIGraphicsBeginImageContext(size);
+    [pImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    UIImage *pngimage = [UIImage imageWithData:UIImagePNGRepresentation(image)];
+    texture = [GLKTextureLoader textureWithCGImage:pngimage.CGImage options:options error:&error];
+    if (error)
+        NSLog(@"Error loading texture from image: %@",error);
+    image_width = (float)image.size.width;
+    image_height = (float)image.size.height;
+    // compute touch radius for each vertex
+    probeRadius = 2.0*image_width/(float)horizontalDivisions;
+    [self initOrigVertices];
+    [self deform];
 }
 
 // deform mesh according to probes
@@ -134,25 +156,32 @@
 // add new probe
 - (void)makeNewProbeWithCGPoint:(CGPoint)p{
     Probe *newprobe = [[Probe alloc] init];
-    newprobe.ix = p.x;
-    newprobe.iy = p.y;
-    newprobe.radius = probeRadius;
-    [newprobe initialise];
-    newprobe.weight = (float *)malloc(numVertices*sizeof(float));
-    for(int i=0;i<numVertices;i++){
-        newprobe.weight[i] = makeWeight(newprobe.ix, newprobe.iy, origVertex[i].dual[0], origVertex[i].dual[1]);
-    }
     [probes addObject:newprobe];
+    [newprobe initWithX:p.x Y:p.y Radius:probeRadius];
+    newprobe->weight = VectorXf::Zero(numVertices);
+    float maxWeight = 0;
+    for(int i=0;i<numVertices;i++){
+        newprobe->weight[i] = computeWeight(newprobe.ix, newprobe.iy, origVertex[i].dual[0], origVertex[i].dual[1]);
+        if(maxWeight<newprobe->weight[i]){
+            newprobe.closestPt = i;
+            maxWeight = newprobe->weight[i];
+        }
+    }
+    if(wm == HARMONIC){
+        [self harmonicWeighting];
+    }
 }
 
 // weight computation
-double makeWeight(double x0,double y0,double x1,double y1){
-    double d = (x0-x1)*(x0-x1)+(y0-y1)*(y0-y1);
+float computeWeight(float x0,float y0,float x1,float y1){
+    float d = (x0-x1)*(x0-x1)+(y0-y1)*(y0-y1);
     if (d == 0) {
         return HUGE_VALF;
     }
     return 1.0/d;
 }
+
+
 // initialose mesh vertices as DCN's
 -(void)initOrigVertices{
     int count=0;
@@ -168,11 +197,13 @@ double makeWeight(double x0,double y0,double x1,double y1){
         }
     }
 }
+
 // initialize probes
 -(void) initializeProbes{
     for (Probe *probe in probes)
-        [probe initialise];
+        [probe initWithX:probe.ix Y:probe.iy Radius:probeRadius];
 }
+
 // freeze probes
 -(void) freezeProbes{
     DCN<float> v;
@@ -190,4 +221,68 @@ double makeWeight(double x0,double y0,double x1,double y1){
     [probes removeAllObjects];
     [self deform];
 }
+
+
+// compute laplacian matrix from edge array
+-(void)computeLaplacian{
+    float gamma = 1;
+    laplacian.resize(numVertices,numVertices);
+    std::vector<T> tripletList(0);
+    tripletList.reserve(numVertices*6);
+    for(int i=0;i<=horizontalDivisions;i++){
+        for(int j=0;j<=verticalDivisions;j++){
+            int cur = j*(horizontalDivisions+1) + i;
+            if(i != 0){
+                tripletList.push_back(T(cur,cur,gamma));
+                tripletList.push_back(T(cur,cur-1,-gamma));
+            }
+            if(i != horizontalDivisions){
+                tripletList.push_back(T(cur,cur,gamma));
+                tripletList.push_back(T(cur,cur+1,-gamma));
+            }
+            if(j != 0){
+                tripletList.push_back(T(cur,cur,gamma));
+                tripletList.push_back(T(cur,cur-horizontalDivisions-1,-gamma));
+            }
+            if(j != verticalDivisions){
+                tripletList.push_back(T(cur,cur,gamma));
+                tripletList.push_back(T(cur,cur+horizontalDivisions+1,-gamma));
+            }
+        }
+    }
+    laplacian.setFromTriplets(tripletList.begin(), tripletList.end());
+}
+
+-(void) harmonicWeighting{
+    SpMat constraintMat([probes count],numVertices);
+    SpMat LHS,RHS;
+    SpSolver solver;
+    __block std::vector<T> tripletList(0);
+    tripletList.reserve([probes count]);
+    [probes enumerateObjectsUsingBlock:^(Probe *probe, NSUInteger i, BOOL *stop) {
+        tripletList.push_back(T(i,probe.closestPt,constraintWeight));
+    }];
+    constraintMat.setFromTriplets(tripletList.begin(), tripletList.end());
+    LHS = laplacian.transpose()*laplacian+constraintMat.transpose()*constraintMat;
+    solver.compute(LHS);
+    if(solver.info() != Success){
+        NSLog(@"Error in computing harmonic weights");
+    }
+    RHS = constraintWeight * constraintMat.transpose();
+    SpMat Sol = solver.solve(RHS);
+    [probes enumerateObjectsUsingBlock:^(Probe *probe, NSUInteger i, BOOL *stop) {
+        VectorXf W = VectorXf(Sol.col(i));
+        probe->weight = W.array().max(0);
+    }];
+}
+
+-(void) euclideanWeighting{
+    for (Probe *probe in probes){
+        for(int i=0;i<numVertices;i++){
+            probe->weight[i] = computeWeight(probe.ix, probe.iy, origVertex[i].dual[0], origVertex[i].dual[1]);
+        }
+    };
+}
+
+
 @end

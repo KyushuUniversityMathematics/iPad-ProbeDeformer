@@ -1,6 +1,6 @@
 //
 //  ViewController.m
-//  iPad-ShapeMatching
+//  
 //  Copyright (c) 2013 G. Matsuda, S. Kaji, H. Ochiai, and Y. Mizoguchi
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,23 +23,15 @@
 //
 
 #import "ViewController.h"
-// Number of Vertical and Horizontal divisions
-#define VDIV 20
-#define HDIV 20
 #define DEFAULTIMAGE @"Default.png"
-#define PROBEIMAGE @"arrow.png"
+#define PROBEIMAGE @"arrow"
+#define VDIV 50
+#define HDIV 50
 
-
-@interface ViewController ()
-@property (strong, nonatomic) EAGLContext *context;
-@property (strong, nonatomic) GLKBaseEffect *effect;
-- (void)setupGL;
-- (void)tearDownGL;
-@end
 
 @implementation ViewController
 @synthesize effect;
-
+@synthesize context;
 
 /**
  **  Load and Unload
@@ -62,22 +54,15 @@
     [self createGestureRecognizers];
 
     // load default image
-    UIImage *pImage = [ UIImage imageNamed:DEFAULTIMAGE ];
-    mainImage = [[ImageVertices alloc] initWithUIImage:pImage VerticalDivisions:VDIV HorizontalDivisions:HDIV];
+    mainImage = [[ImageVertices alloc] initWithVDiv:VDIV HDiv:HDIV];
+    [mainImage loadImage:[ UIImage imageNamed:DEFAULTIMAGE ]];
     NSError *error;
-    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                             [NSNumber numberWithBool:YES],
-                             GLKTextureLoaderOriginBottomLeft,
-                             nil];
-    UIImage *image = [UIImage imageWithData:UIImagePNGRepresentation(pImage)];
-    mainImage->texture = [GLKTextureLoader textureWithCGImage:image.CGImage options:options error:&error];
-    if (error)
+    NSString *path = [[NSBundle mainBundle] pathForResource:PROBEIMAGE ofType:@"png"];
+    NSDictionary* options = @{GLKTextureLoaderOriginBottomLeft: @YES};
+    probeTexture = [GLKTextureLoader textureWithContentsOfFile:path options:options error:&error];
+    if (error){
         NSLog(@"Error loading texture from image: %@",error);
-    pImage = [ UIImage imageNamed:PROBEIMAGE ];
-    image = [UIImage imageWithData:UIImagePNGRepresentation(pImage)];
-    probeTexture = [GLKTextureLoader textureWithCGImage:image.CGImage options:options error:&error];
-    if (error)
-        NSLog(@"Error loading texture from image: %@",error);
+    }
     
     [self setupGL];
 }
@@ -105,8 +90,6 @@
         }
         self.context = nil;
     }
-
-    // Dispose of any resources that can be recreated.
 }
 
 /** 
@@ -139,16 +122,14 @@
     }
     ratio_height = gl_height / screen.height;
     ratio_width = gl_width / screen.width;
-    // compute touch radius for each vertex
-    mainImage.probeRadius = [UIScreen mainScreen].bounds.size.height/30 * ratio;
     
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(-gl_width/2.0, gl_width/2.0, -gl_height/2.0, gl_height/2.0, -1024, 1024);
+    GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(-gl_width/2.0, gl_width/2.0, -gl_height/2.0, gl_height/2.0, -1, 1);
     self.effect.transform.projectionMatrix = projectionMatrix;
 }
 
 - (void)tearDownGL
 {
-    GLuint name = mainImage->texture.name;
+    GLuint name = mainImage.texture.name;
     glDeleteTextures(1, &name);
     name = probeTexture.name;
     glDeleteTextures(1, &name);
@@ -171,14 +152,14 @@
     
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    
+
     [self renderImage];
     for(Probe *probe in mainImage.probes)
         [self renderProbe:probe];
 }
 // Render image
 - (void)renderImage{
-    self.effect.texture2d0.name = mainImage->texture.name;
+    self.effect.texture2d0.name = mainImage.texture.name;
     self.effect.texture2d0.enabled = YES;
     
     [self.effect prepareToDraw];
@@ -186,8 +167,8 @@
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, mainImage->verticesArr);
-    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, mainImage->textureCoordsArr);
+    glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, mainImage.verticesArr);
+    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, mainImage.textureCoordsArr);
     
     for (int i=0; i<mainImage.verticalDivisions; i++) {
         glDrawArrays(GL_TRIANGLE_STRIP, i*(mainImage.horizontalDivisions*2+2), mainImage.horizontalDivisions*2+2);
@@ -203,8 +184,8 @@
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, probe->vertices);
-    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, probe->textureCoords);
+    glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, probe.vertices);
+    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, probe.textureCoords);
     glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 
 }
@@ -268,7 +249,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             // find which probe is touched
             selectedProbe = NULL;
             for(Probe *probe in mainImage.probes){
-                if ([probe distance2X:p.x Y:p.y]<probe.radius*probe.radius*1.5) {
+                if ([probe distance2X:p.x Y:p.y]<mainImage.probeRadius*mainImage.probeRadius*1.5) {
                     selectedProbe = probe;
                     break;
                 }
@@ -307,7 +288,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             p.y = (screen.height/2.0 - p.y)*ratio_height;
             selectedProbe = NULL;
             for(Probe *probe in mainImage.probes){
-                if ([probe distance2X:p.x Y:p.y]<probe.radius*probe.radius*1.5) {
+                if ([probe distance2X:p.x Y:p.y]<mainImage.probeRadius*mainImage.probeRadius*1.5) {
                     selectedProbe = probe;
                     break;
                 }
@@ -340,7 +321,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             p.y = (screen.height/2.0 - p.y)*ratio_height;
             selectedProbe = NULL;
             for(Probe *probe in mainImage.probes){
-                if ([probe distance2X:p.x Y:p.y]<probe.radius*probe.radius*1.5) {
+                if ([probe distance2X:p.x Y:p.y]<mainImage.probeRadius*mainImage.probeRadius*1.5) {
                     selectedProbe = probe;
                     break;
                 }
@@ -351,7 +332,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             if(selectedProbe != NULL){
                 float scale = [sender scale];
                 [sender setScale:1];
-                selectedProbe.radius *= scale;
+                selectedProbe.radius = fmax(selectedProbe.radius * scale, 0.1);
                 [selectedProbe computeOrigVertex];
                 [mainImage deform];
             }
@@ -383,59 +364,28 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]){
         UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
         imagePicker.delegate = self;
-        imagePicker.allowsEditing = YES;
         imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone){
-            //iPhone の場合
-            [self presentViewController:imagePicker animated:YES completion:nil];
-        }else{
-            //iPadの場合
-            if(imagePopController!=NULL){
-                [imagePopController dismissPopoverAnimated:YES];
-            }
-            imagePopController = [[UIPopoverController alloc] initWithContentViewController:imagePicker];
-            [imagePopController presentPopoverFromBarButtonItem:sender
-                                       permittedArrowDirections:UIPopoverArrowDirectionAny
-                                                       animated:YES];
-        }
-    }else{
+        [self presentViewController:imagePicker animated:YES completion:nil];
+    }
+    else{
         NSLog(@"Photo library not available");
     }
 }
+
 #pragma mark -
 #pragma mark UIImagePickerControllerDelegate implementation
 // select image
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
-    GLuint name = mainImage->texture.name;
+    GLuint name = mainImage.texture.name;
     glDeleteTextures(1, &name);
     UIImage *pImage = [info objectForKey: UIImagePickerControllerOriginalImage];
-    mainImage = [[ImageVertices alloc] initWithUIImage:pImage VerticalDivisions:VDIV HorizontalDivisions:HDIV];
-    NSError *error;
-    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                             [NSNumber numberWithBool:YES],
-                             GLKTextureLoaderOriginBottomLeft,
-                             nil];
-    UIImage *image = [UIImage imageWithData:UIImagePNGRepresentation(pImage)];
-    mainImage->texture = [GLKTextureLoader textureWithCGImage:image.CGImage options:options error:&error];
-    if (error)
-        NSLog(@"Error loading texture from image: %@",error);
-
+    [mainImage loadImage:pImage];
     [self setupScreen];
-    [mainImage deform];
-    
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone){
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }else{
-        [imagePopController dismissPopoverAnimated:YES];
-    }
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 //cancelled
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone){
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }else{
-        [imagePopController dismissPopoverAnimated:YES];
-    }
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // help screen
@@ -446,6 +396,25 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 // Device orientation change
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
     [self setupScreen];
+}
+
+// weighting mode change
+-(IBAction)pushSeg:(UISegmentedControl *)sender{
+    int wm = (int)sender.selectedSegmentIndex;
+    switch(wm){
+        case 0:
+            mainImage.wm=EUCLIDEAN;
+            [mainImage euclideanWeighting];
+            break;
+        case 1:
+            mainImage.wm=HARMONIC;
+            [mainImage harmonicWeighting];
+            break;
+        case 2:
+            mainImage.wm=BIHARMONIC;
+            // TODO
+            break;
+    }
     [mainImage deform];
 }
 
@@ -456,10 +425,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
  */
 - (void)viewDidUnload {
     [super viewDidUnload];
-    GLuint name = mainImage->texture.name;
-    glDeleteTextures(1, &name);
-    name = probeTexture.name;
-    glDeleteTextures(1, &name);
+    [self tearDownGL];
+    self.context = nil;
 }
 
 @end

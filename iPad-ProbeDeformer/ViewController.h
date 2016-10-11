@@ -1,6 +1,6 @@
 //
 //  ViewController.h
-//  iPad-ShapeMatching
+//  
 //  Copyright (c) 2013 G. Matsuda, S. Kaji, H. Ochiai, and Y. Mizoguchi
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -41,16 +41,16 @@
     // screen size
     float ratio_height;
     float ratio_width;
-    CGSize screen;
-    
-    // image picker
-    UIPopoverController *imagePopController;
+    CGSize screen;    
 }
-
+@property (strong, nonatomic) EAGLContext *context;
+@property (strong, nonatomic) GLKBaseEffect *effect;
+- (void)setupGL;
+- (void)tearDownGL;
 - (IBAction)pushButton_ReadImage:(UIBarButtonItem *)sender;
 - (IBAction)pushButton_Initialize:(UIBarButtonItem *)sender;
 - (IBAction)unwindToFirstScene:(UIStoryboardSegue *)unwindSegue;
-
+- (IBAction)pushSeg:(UISegmentedControl *)sender;
 @end
 
 @interface UIPopoverController (iPhone)

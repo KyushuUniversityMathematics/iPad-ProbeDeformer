@@ -1,7 +1,6 @@
-//   Library for Dual Complex Numbers
-//   by Shizuo KAJI,     Mar. 2014
 //
-// requirements:  none
+//  DCN.h
+//
 
 #ifndef ProbeDeformer_DCN_h
 #define ProbeDeformer_DCN_h

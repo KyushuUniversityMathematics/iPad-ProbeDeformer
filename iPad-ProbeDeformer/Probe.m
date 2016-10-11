@@ -37,8 +37,10 @@
 @synthesize theta;
 @synthesize radius;
 
-// effect for each vertex of mesh
-@synthesize weight;
+@synthesize closestPt;
+@synthesize vertices;
+@synthesize textureCoords;
+
 
 /** copyWithZone **/
 - (id)copyWithZone:(NSZone*)zone{
@@ -50,13 +52,13 @@
     [clone setY:self.y];
     [clone setTheta:self.theta];
     [clone setRadius:self.radius];
-    [clone setWeight:self.weight];
     return clone;
 }
 
 // init
 - (void)dealloc{
-    free(weight);
+    free(textureCoords);
+    free(vertices);
 }
 
 // set probe state by difference
@@ -90,12 +92,15 @@
 }
 
 // revert to initial position
-- (void)initialise{
-    x = ix;
-    y = iy;
+- (void)initWithX:(float) _ix Y:(float)_iy Radius:(float)_radius{
+    x = ix = _ix;
+    y = iy = _iy;
+    radius = _radius;
     theta = 0.0f;
     itheta = 0.0f;
     dcn = DCN<float>(1,0,0,0);
+    vertices = (GLfloat *)malloc(8*sizeof(GLfloat));
+    textureCoords = (GLfloat *)malloc(8*sizeof(GLfloat));
     [self computeOrigVertex];
     // texture coordinate
     textureCoords[0] = 1.0;
@@ -127,7 +132,7 @@
 + (DCN<float>)DLB:(NSMutableArray*)probes Weight:(int)w{
     DCN<float>dcn;
     for(Probe* probe in probes)
-        dcn += probe->dcn * probe.weight[w] * probe.radius * probe.radius;
+        dcn += probe->dcn * probe->weight[w] * probe.radius * probe.radius;
     return(dcn.normalised());
 }
 
