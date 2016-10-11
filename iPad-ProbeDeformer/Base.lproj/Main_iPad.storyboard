@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+=======
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="BV1-FR-VrT">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
     </dependencies>
     <scenes>
         <!--GLKit View Controller-->
@@ -19,6 +27,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jmF-KM-ReH">
+<<<<<<< HEAD
+=======
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
                                 <items>
                                     <navigationItem title="ProbeDeformer" id="kLO-h6-Dz4">
                                         <barButtonItem key="leftBarButtonItem" title="Image" id="xdK-FA-AGh">
@@ -35,6 +47,10 @@
                                 </items>
                             </navigationBar>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="n20-mN-OOh">
+<<<<<<< HEAD
+=======
+                                <rect key="frame" x="0.0" y="980" width="768" height="44"/>
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
                                 <items>
                                     <barButtonItem title="Help" id="9pR-kb-I4T">
                                         <connections>
@@ -89,6 +105,10 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tir-PF-xPD">
+<<<<<<< HEAD
+=======
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
                                 <items>
                                     <navigationItem title="How To Use" id="8IZ-Q3-a4r">
                                         <barButtonItem key="leftBarButtonItem" title="Back" id="J74-b7-em8">
@@ -101,6 +121,10 @@
                                 </items>
                             </navigationBar>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Touch Gestures" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ido-ER-rLw">
+<<<<<<< HEAD
+=======
+                                <rect key="frame" x="20" y="50" width="139" height="27"/>
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
                                 <constraints>
                                     <constraint firstAttribute="width" constant="139" id="6R5-Ya-NUV"/>
                                     <constraint firstAttribute="height" constant="27" id="Srb-qR-H8y"/>
@@ -110,6 +134,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DoubleTap: Add/Remove" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bVf-hW-bSa">
+<<<<<<< HEAD
+=======
+                                <rect key="frame" x="20" y="85" width="231" height="21"/>
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
                                 <constraints>
                                     <constraint firstAttribute="width" constant="231" id="QOQ-5l-bze"/>
                                 </constraints>
@@ -117,15 +145,27 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Rotate with two fingers: Rotate" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9IG-4r-RA8">
+<<<<<<< HEAD
                                 <frame key="frameInset" minX="20" minY="114" width="238" height="21"/>
+=======
+                                <rect key="frame" x="20" y="114" width="238" height="21"/>
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pinch: Change Weight" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HvE-zG-PIA">
+<<<<<<< HEAD
+=======
+                                <rect key="frame" x="20" y="143" width="231" height="21"/>
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Buttons" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ziN-S1-kq1">
+<<<<<<< HEAD
+=======
+                                <rect key="frame" x="20" y="190" width="139" height="27"/>
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
                                 <constraints>
                                     <constraint firstAttribute="height" constant="27" id="mbS-UT-8cp"/>
                                 </constraints>
@@ -134,11 +174,19 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Image: Load a new image" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y5V-Pc-kIm">
+<<<<<<< HEAD
                                 <frame key="frameInset" minX="20" minY="225" width="198" height="21"/>
+=======
+                                <rect key="frame" x="20" y="225" width="198" height="21"/>
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Init: Revert to the original" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dTA-Sv-QmD">
+<<<<<<< HEAD
+=======
+                                <rect key="frame" x="20" y="254" width="231" height="21"/>
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>

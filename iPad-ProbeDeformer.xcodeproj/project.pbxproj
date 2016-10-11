@@ -155,7 +155,11 @@
 		2AF1371318CA2900007E999A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+<<<<<<< HEAD
 				LastUpgradeCheck = 0800;
+=======
+				LastUpgradeCheck = 0700;
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 				ORGANIZATIONNAME = "mcg-q";
 				TargetAttributes = {
 					2AF1371A18CA2900007E999A = {
@@ -251,7 +255,10 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+<<<<<<< HEAD
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+=======
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -268,8 +275,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+<<<<<<< HEAD
 				HEADER_SEARCH_PATHS = /usr/local/include/eigen3;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+=======
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -306,8 +317,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+<<<<<<< HEAD
 				HEADER_SEARCH_PATHS = /usr/local/include/eigen3;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+=======
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -324,7 +339,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iPad-ProbeDeformer/iPad-ProbeDeformer-Prefix.pch";
 				INFOPLIST_FILE = "iPad-ProbeDeformer/iPad-ProbeDeformer-Info.plist";
+<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+=======
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.lasm.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -342,7 +361,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iPad-ProbeDeformer/iPad-ProbeDeformer-Prefix.pch";
 				INFOPLIST_FILE = "iPad-ProbeDeformer/iPad-ProbeDeformer-Info.plist";
+<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+=======
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+>>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.lasm.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
