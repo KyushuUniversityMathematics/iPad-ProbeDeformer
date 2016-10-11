@@ -1,8 +1,6 @@
-<<<<<<< HEAD
 //
 //  DCN.h
 //
-=======
 /**
  * @file    Library for Dual Complex Numbers
  * @author  Shizuo KAJI <shizuo.kaji@gmail.com>
@@ -14,8 +12,8 @@
  * For the detail, look at
  * G. Matsuda, S. Kaji, and H. Ochiai, Anti-commutative Dual Complex Numbers and 2D Rigid Transformation,
  * Mathematical Progress in Expressive Image Synthesis I, Springer-Japan, 2014.
+ * http://arxiv.org/abs/1601.01754
 */
->>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 
 #pragma once
 

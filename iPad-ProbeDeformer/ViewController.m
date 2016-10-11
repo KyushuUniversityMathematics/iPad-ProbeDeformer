@@ -122,11 +122,6 @@
     }
     ratio_height = gl_height / screen.height;
     ratio_width = gl_width / screen.width;
-<<<<<<< HEAD
-=======
-    // compute touch radius for each vertex
-    mainImage.probeRadius = mainImage.image_width/(float)mainImage.horizontalDivisions;
->>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
     
     GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(-gl_width/2.0, gl_width/2.0, -gl_height/2.0, gl_height/2.0, -1, 1);
     self.effect.transform.projectionMatrix = projectionMatrix;
@@ -370,26 +365,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
         imagePicker.delegate = self;
         imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-<<<<<<< HEAD
         [self presentViewController:imagePicker animated:YES completion:nil];
-    }
-    else{
-=======
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone){
-            //iPhone
-            [self presentViewController:imagePicker animated:YES completion:nil];
-        }else{
-            //iPad
-            if(imagePopController!=NULL){
-                [imagePopController dismissPopoverAnimated:YES];
-            }
-            imagePopController = [[UIPopoverController alloc] initWithContentViewController:imagePicker];
-            [imagePopController presentPopoverFromBarButtonItem:sender
-                                       permittedArrowDirections:UIPopoverArrowDirectionAny
-                                                       animated:YES];
-        }
     }else{
->>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
         NSLog(@"Photo library not available");
     }
 }

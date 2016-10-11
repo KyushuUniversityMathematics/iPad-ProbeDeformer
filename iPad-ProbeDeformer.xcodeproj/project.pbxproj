@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A3EA6661DA785DD00A17863 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A3EA6651DA785DD00A17863 /* AVFoundation.framework */; };
+		2A3EA6681DA785F000A17863 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A3EA6671DA785F000A17863 /* CoreVideo.framework */; };
+		2A3EA66A1DA7862A00A17863 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A3EA6691DA7862A00A17863 /* CoreMedia.framework */; };
+		2A3EA66C1DA7863D00A17863 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A3EA66B1DA7863D00A17863 /* QuartzCore.framework */; };
+		2AF05FA71DACB5740080C9D2 /* images in Resources */ = {isa = PBXBuildFile; fileRef = 2AF05FA61DACB5740080C9D2 /* images */; };
 		2AF1371F18CA2900007E999A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AF1371E18CA2900007E999A /* Foundation.framework */; };
 		2AF1372118CA2900007E999A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AF1372018CA2900007E999A /* CoreGraphics.framework */; };
 		2AF1372318CA2900007E999A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AF1372218CA2900007E999A /* UIKit.framework */; };
@@ -25,6 +30,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2A3EA6651DA785DD00A17863 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		2A3EA6671DA785F000A17863 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		2A3EA6691DA7862A00A17863 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		2A3EA66B1DA7863D00A17863 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		2AF05FA61DACB5740080C9D2 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = images; sourceTree = "<group>"; };
 		2AF1371B18CA2900007E999A /* iPad-ProbeDeformer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iPad-ProbeDeformer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AF1371E18CA2900007E999A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2AF1372018CA2900007E999A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -56,6 +66,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A3EA66C1DA7863D00A17863 /* QuartzCore.framework in Frameworks */,
+				2A3EA66A1DA7862A00A17863 /* CoreMedia.framework in Frameworks */,
+				2A3EA6681DA785F000A17863 /* CoreVideo.framework in Frameworks */,
+				2A3EA6661DA785DD00A17863 /* AVFoundation.framework in Frameworks */,
 				2AF1372718CA2900007E999A /* OpenGLES.framework in Frameworks */,
 				2AF1372118CA2900007E999A /* CoreGraphics.framework in Frameworks */,
 				2AF1372318CA2900007E999A /* UIKit.framework in Frameworks */,
@@ -70,6 +84,7 @@
 		2AF1371218CA2900007E999A = {
 			isa = PBXGroup;
 			children = (
+				2AF05FA61DACB5740080C9D2 /* images */,
 				2AF1372818CA2900007E999A /* iPad-ProbeDeformer */,
 				2AF1371D18CA2900007E999A /* Frameworks */,
 				2AF1371C18CA2900007E999A /* Products */,
@@ -87,6 +102,10 @@
 		2AF1371D18CA2900007E999A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2A3EA66B1DA7863D00A17863 /* QuartzCore.framework */,
+				2A3EA6691DA7862A00A17863 /* CoreMedia.framework */,
+				2A3EA6671DA785F000A17863 /* CoreVideo.framework */,
+				2A3EA6651DA785DD00A17863 /* AVFoundation.framework */,
 				2AF1371E18CA2900007E999A /* Foundation.framework */,
 				2AF1372018CA2900007E999A /* CoreGraphics.framework */,
 				2AF1372218CA2900007E999A /* UIKit.framework */,
@@ -155,11 +174,7 @@
 		2AF1371318CA2900007E999A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-<<<<<<< HEAD
 				LastUpgradeCheck = 0800;
-=======
-				LastUpgradeCheck = 0700;
->>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 				ORGANIZATIONNAME = "mcg-q";
 				TargetAttributes = {
 					2AF1371A18CA2900007E999A = {
@@ -190,6 +205,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AF05FA71DACB5740080C9D2 /* images in Resources */,
 				2AF1373918CA2900007E999A /* Main_iPad.storyboard in Resources */,
 				2AF1376E18CA3073007E999A /* arrow.png in Resources */,
 				2AF1374218CA2900007E999A /* Images.xcassets in Resources */,
@@ -255,10 +271,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-<<<<<<< HEAD
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-=======
->>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -275,12 +288,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-<<<<<<< HEAD
-				HEADER_SEARCH_PATHS = /usr/local/include/eigen3;
+				HEADER_SEARCH_PATHS = /usr/local/include/eigen3/;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
-=======
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
->>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -317,12 +326,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-<<<<<<< HEAD
-				HEADER_SEARCH_PATHS = /usr/local/include/eigen3;
+				HEADER_SEARCH_PATHS = /usr/local/include/eigen3/;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
-=======
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
->>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -339,11 +344,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iPad-ProbeDeformer/iPad-ProbeDeformer-Prefix.pch";
 				INFOPLIST_FILE = "iPad-ProbeDeformer/iPad-ProbeDeformer-Info.plist";
-<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
-=======
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
->>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.lasm.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -361,11 +362,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iPad-ProbeDeformer/iPad-ProbeDeformer-Prefix.pch";
 				INFOPLIST_FILE = "iPad-ProbeDeformer/iPad-ProbeDeformer-Info.plist";
-<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
-=======
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
->>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.lasm.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

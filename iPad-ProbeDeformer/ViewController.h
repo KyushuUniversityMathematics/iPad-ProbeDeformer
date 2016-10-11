@@ -52,7 +52,3 @@
 - (IBAction)unwindToFirstScene:(UIStoryboardSegue *)unwindSegue;
 - (IBAction)pushSeg:(UISegmentedControl *)sender;
 @end
-
-@interface UIPopoverController (iPhone)
-+ (BOOL)_popoversDisabled;
-@end

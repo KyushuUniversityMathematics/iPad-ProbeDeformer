@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-<<<<<<< HEAD
    LastUpgradeVersion = "0800"
-=======
-   LastUpgradeVersion = "0700"
->>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -32,16 +28,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2AF1374618CA2900007E999A"
-               BuildableName = "iPad-ProbeDeformerTests.xctest"
-               BlueprintName = "iPad-ProbeDeformerTests"
-               ReferencedContainer = "container:iPad-ProbeDeformer.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
@@ -56,14 +42,9 @@
       </AdditionalOptions>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Release"
-<<<<<<< HEAD
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-=======
-      selectedDebuggerIdentifier = ""
-      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
->>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"

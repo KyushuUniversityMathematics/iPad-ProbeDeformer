@@ -161,7 +161,6 @@
     newprobe->weight = VectorXf::Zero(numVertices);
     float maxWeight = 0;
     for(int i=0;i<numVertices;i++){
-<<<<<<< HEAD
         newprobe->weight[i] = computeWeight(newprobe.ix, newprobe.iy, origVertex[i].dual[0], origVertex[i].dual[1]);
         if(maxWeight<newprobe->weight[i]){
             newprobe.closestPt = i;
@@ -170,9 +169,6 @@
     }
     if(wm == HARMONIC){
         [self harmonicWeighting];
-=======
-        newprobe.weight[i] = computeWeight(newprobe.ix, newprobe.iy, origVertex[i].dual[0], origVertex[i].dual[1]);
->>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
     }
 }
 
@@ -185,10 +181,6 @@ float computeWeight(float x0,float y0,float x1,float y1){
     return 1.0/d;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 7d12dac541ba92c33c8e8a0a96e3949ddacd88c7
 // initialose mesh vertices as DCN's
 -(void)initOrigVertices{
     int count=0;
