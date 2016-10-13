@@ -1,30 +1,8 @@
 //
 //  ImageVertices.m
 //
-//  Copyright (c) 2013 G. Matsuda, S. Kaji, H. Ochiai, and Y. Mizoguchi
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to
-//  deal in the Software without restriction, including without limitation the
-//  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-//  sell copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-//  IN THE SOFTWARE.
-//
-
 
 #import "ImageVertices.h"
-
 
 @implementation ImageVertices
 
@@ -35,22 +13,6 @@
 @synthesize image_width, image_height;
 @synthesize probes, probeRadius;
 @synthesize texture, verticesArr, vertices, textureCoordsArr, vertexIndices;
-
-
-/** copyWithZone **/
-- (id)copyWithZone:(NSZone *)zone{
-    ImageVertices *clone =
-    [[[self class] allocWithZone:zone] init];
-    [clone setVerticalDivisions:self.verticalDivisions];
-    [clone setHorizontalDivisions:self.horizontalDivisions];
-    [clone setIndexArrsize:indexArrsize];
-    [clone setNumVertices:numVertices];
-    [clone setImage_width:self.image_width];
-    [clone setImage_height:self.image_height];
-    [clone setProbes:self.probes];
-    [clone setProbeRadius:self.probeRadius];
-    return  clone;
-}
 
 // dealloc
 - (void)dealloc{
@@ -90,15 +52,15 @@
             }
         }
         // prepare texture coordinate
-        float xIncrease = 1.0f/horizontalDivisions;
-        float yIncrease = 1.0f/verticalDivisions;
+        float xstep = 1.0f/horizontalDivisions;
+        float ystep = 1.0f/verticalDivisions;
         count = 0;
         for (int y=0; y<verticalDivisions; y++) {
             for (int x=0; x <= horizontalDivisions; x++) {
-                float currX = x * xIncrease;
-                float currY = y * yIncrease;
+                float currX = x * xstep;
+                float currY = 1 - y * ystep;
                 textureCoordsArr[count++] = currX;
-                textureCoordsArr[count++] = currY + yIncrease;
+                textureCoordsArr[count++] = currY - ystep;
                 textureCoordsArr[count++] = currX;
                 textureCoordsArr[count++] = currY;
             }
@@ -109,7 +71,7 @@
 
 -(void) loadImage:(UIImage*)pImage{
     NSError *error;
-    NSDictionary* options = @{GLKTextureLoaderOriginBottomLeft: @YES};
+    NSDictionary* options = nil;  //  if we want to flip the image, use @{GLKTextureLoaderOriginBottomLeft: @YES};
     //resize
     CGFloat oldWidth = pImage.size.width;
     CGFloat oldHeight = pImage.size.height;
@@ -119,10 +81,11 @@
     [pImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
+    //generate texture
     UIImage *pngimage = [UIImage imageWithData:UIImagePNGRepresentation(image)];
+    NSLog(@"GL Error = %u", glGetError());
     texture = [GLKTextureLoader textureWithCGImage:pngimage.CGImage options:options error:&error];
-    if (error)
-        NSLog(@"Error loading texture from image: %@",error);
+    if(error)NSLog(@"Error loading texture from image: %@",error);
     image_width = (float)image.size.width;
     image_height = (float)image.size.height;
     // compute touch radius for each vertex
@@ -167,7 +130,7 @@
             maxWeight = newprobe->weight[i];
         }
     }
-    if(wm == HARMONIC){
+    if(wm == HARMONIC || wm == BIHARMONIC){
         [self harmonicWeighting];
     }
 }
@@ -253,6 +216,12 @@ float computeWeight(float x0,float y0,float x1,float y1){
 }
 
 -(void) harmonicWeighting{
+    SpMat op;
+    if(wm==HARMONIC){
+        op = laplacian;
+    }else if(wm==BIHARMONIC){
+        op = 0.2*laplacian*laplacian + laplacian;
+    }
     SpMat constraintMat([probes count],numVertices);
     SpMat LHS,RHS;
     SpSolver solver;
@@ -262,7 +231,7 @@ float computeWeight(float x0,float y0,float x1,float y1){
         tripletList.push_back(T(i,probe.closestPt,constraintWeight));
     }];
     constraintMat.setFromTriplets(tripletList.begin(), tripletList.end());
-    LHS = laplacian.transpose()*laplacian+constraintMat.transpose()*constraintMat;
+    LHS = op.transpose()*op+constraintMat.transpose()*constraintMat;
     solver.compute(LHS);
     if(solver.info() != Success){
         NSLog(@"Error in computing harmonic weights");

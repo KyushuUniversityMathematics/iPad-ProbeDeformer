@@ -11,7 +11,7 @@
 		2A3EA6681DA785F000A17863 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A3EA6671DA785F000A17863 /* CoreVideo.framework */; };
 		2A3EA66A1DA7862A00A17863 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A3EA6691DA7862A00A17863 /* CoreMedia.framework */; };
 		2A3EA66C1DA7863D00A17863 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A3EA66B1DA7863D00A17863 /* QuartzCore.framework */; };
-		2AF05FA71DACB5740080C9D2 /* images in Resources */ = {isa = PBXBuildFile; fileRef = 2AF05FA61DACB5740080C9D2 /* images */; };
+		2A3EA66E1DAE2C3D00A17863 /* image in Resources */ = {isa = PBXBuildFile; fileRef = 2A3EA66D1DAE2C3D00A17863 /* image */; };
 		2AF1371F18CA2900007E999A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AF1371E18CA2900007E999A /* Foundation.framework */; };
 		2AF1372118CA2900007E999A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AF1372018CA2900007E999A /* CoreGraphics.framework */; };
 		2AF1372318CA2900007E999A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AF1372218CA2900007E999A /* UIKit.framework */; };
@@ -34,7 +34,7 @@
 		2A3EA6671DA785F000A17863 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		2A3EA6691DA7862A00A17863 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		2A3EA66B1DA7863D00A17863 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		2AF05FA61DACB5740080C9D2 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = images; sourceTree = "<group>"; };
+		2A3EA66D1DAE2C3D00A17863 /* image */ = {isa = PBXFileReference; lastKnownFileType = folder; path = image; sourceTree = "<group>"; };
 		2AF1371B18CA2900007E999A /* iPad-ProbeDeformer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iPad-ProbeDeformer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AF1371E18CA2900007E999A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2AF1372018CA2900007E999A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -51,7 +51,6 @@
 		2AF1373E18CA2900007E999A /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		2AF1373F18CA2900007E999A /* ViewController.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = ViewController.m; sourceTree = "<group>"; };
 		2AF1374118CA2900007E999A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		2AF1374818CA2900007E999A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		2AF1376118CA2986007E999A /* ImageVertices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageVertices.h; sourceTree = "<group>"; };
 		2AF1376218CA2986007E999A /* ImageVertices.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = ImageVertices.m; sourceTree = "<group>"; };
 		2AF1376618CA29BF007E999A /* DCN.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = DCN.h; path = "iPad-ProbeDeformer/DCN.h"; sourceTree = SOURCE_ROOT; };
@@ -84,7 +83,7 @@
 		2AF1371218CA2900007E999A = {
 			isa = PBXGroup;
 			children = (
-				2AF05FA61DACB5740080C9D2 /* images */,
+				2A3EA66D1DAE2C3D00A17863 /* image */,
 				2AF1372818CA2900007E999A /* iPad-ProbeDeformer */,
 				2AF1371D18CA2900007E999A /* Frameworks */,
 				2AF1371C18CA2900007E999A /* Products */,
@@ -111,7 +110,6 @@
 				2AF1372218CA2900007E999A /* UIKit.framework */,
 				2AF1372418CA2900007E999A /* GLKit.framework */,
 				2AF1372618CA2900007E999A /* OpenGLES.framework */,
-				2AF1374818CA2900007E999A /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -205,7 +203,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2AF05FA71DACB5740080C9D2 /* images in Resources */,
+				2A3EA66E1DAE2C3D00A17863 /* image in Resources */,
 				2AF1373918CA2900007E999A /* Main_iPad.storyboard in Resources */,
 				2AF1376E18CA3073007E999A /* arrow.png in Resources */,
 				2AF1374218CA2900007E999A /* Images.xcassets in Resources */,

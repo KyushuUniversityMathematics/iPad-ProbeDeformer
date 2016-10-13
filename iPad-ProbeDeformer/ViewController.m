@@ -1,33 +1,12 @@
 //
 //  ViewController.m
 //  
-//  Copyright (c) 2013 G. Matsuda, S. Kaji, H. Ochiai, and Y. Mizoguchi
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to
-//  deal in the Software without restriction, including without limitation the
-//  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-//  sell copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-//  IN THE SOFTWARE.
-//
 
 #import "ViewController.h"
 #define DEFAULTIMAGE @"Default.png"
 #define PROBEIMAGE @"arrow"
 #define VDIV 50
 #define HDIV 50
-
 
 @implementation ViewController
 @synthesize effect;
@@ -49,6 +28,8 @@
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
     [EAGLContext setCurrentContext:self.context];
+    
+    cameraMode = false;
     
     // gestures
     [self createGestureRecognizers];
@@ -95,8 +76,7 @@
 /** 
  **  Open GL
  **/
-- (void)setupGL
-{
+- (void)setupGL{
     [EAGLContext setCurrentContext:self.context];
     self.effect = [[GLKBaseEffect alloc] init];
     [self setupScreen];
@@ -104,21 +84,16 @@
 
 - (void)setupScreen{
     float gl_height, gl_width, ratio;
-    if (self.interfaceOrientation<3) {
-        screen.height = [UIScreen mainScreen].bounds.size.height;
-        screen.width = [UIScreen mainScreen].bounds.size.width;
-    }else{
-        screen.height = [UIScreen mainScreen].bounds.size.width;
-        screen.width = [UIScreen mainScreen].bounds.size.height;
-    }
+//    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    screen.height = [UIScreen mainScreen].bounds.size.height;
+    screen.width = [UIScreen mainScreen].bounds.size.width;
+    ratio = screen.height/screen.width;
     if (screen.width*mainImage.image_height<screen.height*mainImage.image_width) {
-        ratio = mainImage.image_width/screen.width;
         gl_width = mainImage.image_width;
-        gl_height = screen.height*ratio;
+        gl_height = gl_width*ratio;
     }else{
-        ratio = mainImage.image_height/screen.height;
         gl_height = mainImage.image_height;
-        gl_width = screen.width*ratio;
+        gl_width = gl_height/ratio;
     }
     ratio_height = gl_height / screen.height;
     ratio_width = gl_width / screen.width;
@@ -127,10 +102,10 @@
     self.effect.transform.projectionMatrix = projectionMatrix;
 }
 
-- (void)tearDownGL
-{
+- (void)tearDownGL{
     GLuint name = mainImage.texture.name;
     glDeleteTextures(1, &name);
+    glDeleteTextures(1, &cameraTextureName);
     name = probeTexture.name;
     glDeleteTextures(1, &name);
     [EAGLContext setCurrentContext:self.context];
@@ -152,6 +127,8 @@
     
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
+    
+    [self.effect prepareToDraw];
 
     [self renderImage];
     for(Probe *probe in mainImage.probes)
@@ -159,11 +136,19 @@
 }
 // Render image
 - (void)renderImage{
-    self.effect.texture2d0.name = mainImage.texture.name;
-    self.effect.texture2d0.enabled = YES;
-    
-    [self.effect prepareToDraw];
-
+    if(cameraMode){
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, cameraTextureName);
+        glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP_HINT, GL_TRUE );
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    }else{
+        self.effect.texture2d0.name = mainImage.texture.name;
+        self.effect.texture2d0.enabled = YES;
+        [self.effect prepareToDraw];
+    }
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
     
@@ -257,18 +242,23 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             break;
         }
         case UIGestureRecognizerStateChanged: {
+            // get distance of pan
+            CGPoint dp = [sender translationInView:self.view];
+            // clear the distance (the distance accumulates unless cleared)
+            [sender setTranslation:CGPointZero inView:self.view];
+            // scale to match OpenGL
+            dp.x *= ratio_width;
+            dp.y *= ratio_height;
             if(selectedProbe != NULL){
-                // get distance of pan
-                CGPoint dp = [sender translationInView:self.view];
-                // clear the distance (the distance accumulates unless cleared)
-                [sender setTranslation:CGPointZero inView:self.view];
-                // scale to match OpenGL
-                dp.x *= ratio_width;
-                dp.y *= ratio_height;
-                // Displace probe
+                // Displace the selected probe
                 [selectedProbe setPosDx:dp.x Dy:-dp.y Dtheta:0.0f];
-                [mainImage deform];
+            }else{
+                // Displace all probes
+                for(Probe *probe in mainImage.probes){
+                    [probe setPosDx:dp.x Dy:-dp.y Dtheta:0.0f];
+                }
             }
+            [mainImage deform];                
             break;
         }
         case UIGestureRecognizerStateEnded: {
@@ -300,8 +290,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                 float dtheta = [sender rotation];
                 [sender setRotation:0];
                 [selectedProbe setPosDx:0.0f Dy:0.0f Dtheta:-dtheta];
-                [mainImage deform];
             }
+            [mainImage deform];
             break;
         }
         case UIGestureRecognizerStateEnded: {
@@ -375,10 +365,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 #pragma mark UIImagePickerControllerDelegate implementation
 // select image
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
+    [self stopCamera];
     GLuint name = mainImage.texture.name;
     glDeleteTextures(1, &name);
     UIImage *pImage = [info objectForKey: UIImagePickerControllerOriginalImage];
     [mainImage loadImage:pImage];
+    [mainImage removeProbes];
     [self setupScreen];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -394,6 +386,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 // Device orientation change
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
+    if(cameraMode){
+        [self cameraOrientation];
+    }
     [self setupScreen];
 }
 
@@ -411,13 +406,167 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             break;
         case 2:
             mainImage.wm=BIHARMONIC;
-            // TODO
+            [mainImage harmonicWeighting];
             break;
     }
     [mainImage deform];
 }
 
+// Camera
+-(IBAction)pushCamera:(UISwitch *)sender{
+//    [mainImage removeProbes];
+    if([sender isOn]){
+        @try {
+            [self initializeCamera];
+            [self cameraOrientation];
+            NSLog(@"Camera ON");
+        }
+        @catch (NSException *exception) {
+            NSLog(@"camera init error : %@", exception);
+        }
+    }else{
+        [self stopCamera];
+        [mainImage loadImage:[ UIImage imageNamed:DEFAULTIMAGE ]];
+        NSLog(@"Camera OFF");
+    }
+    [self setupScreen];
+}
+ 
 
+- (void)initializeCamera{
+    cameraMode = true;
+    captureDevice = nil;
+    for(AVCaptureDevice *device in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo]){
+        if(device.position == AVCaptureDevicePositionBack){
+            captureDevice = device;
+        }
+    }
+    if(captureDevice == nil){
+        [NSException raise:@"" format:@"AVCaptureDevicePositionBack not found"];
+    }
+    
+    NSError *error;
+    deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:captureDevice error:&error];
+    
+    session = [[AVCaptureSession alloc] init];
+    [session beginConfiguration];
+    session.sessionPreset = AVCaptureSessionPreset1280x720;
+    [session addInput:deviceInput];
+    
+    videoOutput = [[AVCaptureVideoDataOutput alloc] init];
+    videoOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
+    [videoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+    [session addOutput:videoOutput];
+    
+    [session commitConfiguration];
+    [session startRunning];
+    for(AVCaptureConnection *connection in videoOutput.connections){
+        if(connection.supportsVideoOrientation){
+            connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+        }
+    }
+    
+    CVReturn cvError = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, self.context, NULL, &textureCache);
+    if(cvError){
+        [NSException raise:@"" format:@"CVOpenGLESTextureCacheCreate failed"];
+    }
+}
+
+-(void) stopCamera{
+    cameraMode = false;
+    _cameraSw.on = false;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        if ([session isRunning]){
+            [session stopRunning];
+            [session removeInput:deviceInput];
+            [session removeOutput:videoOutput];
+            session = nil;
+            videoOutput = nil;
+            deviceInput = nil;
+            
+        }
+    });
+}
+
+// the following is called 30 times per sec
+- (void)captureOutput:(AVCaptureOutput *)captureOutput
+didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+       fromConnection:(AVCaptureConnection *)connection
+{
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    int bufferWidth = (int)CVPixelBufferGetWidth(imageBuffer);
+    int bufferHeight = (int)CVPixelBufferGetHeight(imageBuffer);
+    
+    CVPixelBufferLockBaseAddress(imageBuffer, 0);
+    CVOpenGLESTextureRef esTexture;
+    CVReturn cvError = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                                                                    textureCache,
+                                                                    imageBuffer,
+                                                                    NULL,
+                                                                    GL_TEXTURE_2D,
+                                                                    GL_RGBA,
+                                                                    bufferWidth, bufferHeight,
+                                                                    GL_BGRA,
+                                                                    GL_UNSIGNED_BYTE,
+                                                                    0,
+                                                                    &esTexture);
+    
+    if(cvError){
+        NSLog(@"CVOpenGLESTextureCacheCreateTextureFromImage failed");
+    }
+    cameraTextureName = CVOpenGLESTextureGetName(esTexture);
+    CVOpenGLESTextureCacheFlush(textureCache, 0);
+    if(textureObject)
+        CFRelease(textureObject);
+    
+    textureObject = esTexture;
+    CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+}
+
+-(void)cameraOrientation{
+    AVCaptureVideoOrientation orientation;
+    switch ([UIDevice currentDevice].orientation) {
+        case UIDeviceOrientationUnknown:
+            orientation = AVCaptureVideoOrientationPortrait;
+            mainImage.image_width =720;
+            mainImage.image_height =1280;
+            break;
+        case UIDeviceOrientationPortrait:
+            orientation = AVCaptureVideoOrientationPortrait;
+            mainImage.image_width =720;
+            mainImage.image_height =1280;
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            orientation = AVCaptureVideoOrientationPortraitUpsideDown;
+            mainImage.image_width =720;
+            mainImage.image_height =1280;
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            orientation = AVCaptureVideoOrientationLandscapeRight;
+            mainImage.image_width =1280;
+            mainImage.image_height =720;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            orientation = AVCaptureVideoOrientationLandscapeLeft;
+            mainImage.image_width =1280;
+            mainImage.image_height =720;
+            break;
+        case UIDeviceOrientationFaceUp:
+        case UIDeviceOrientationFaceDown:
+            orientation = AVCaptureVideoOrientationPortrait;
+            mainImage.image_width =720;
+            mainImage.image_height =1280;
+            break;
+    }
+    for(AVCaptureConnection *connection in videoOutput.connections){
+        if(connection.supportsVideoOrientation){
+            connection.videoOrientation = orientation;
+        }
+    }
+    [self setupScreen];
+    [mainImage initOrigVertices];
+    [mainImage deform];
+}
 
 /**
  *  termination procedure
