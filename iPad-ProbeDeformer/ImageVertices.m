@@ -1,13 +1,19 @@
-//
-//  ImageVertices.m
-//
+/**
+ * @file ImageVertices.m
+ * @brief a class to handle 2D grid with OpenGL
+ * @section LICENSE
+ *                   the MIT License
+ * @section Requirements
+ * @version 0.10
+ * @date  Oct. 2016
+ * @author Shizuo KAJI
+ */
 
 #import "ImageVertices.h"
 
 @implementation ImageVertices
 
-@synthesize verticalDivisions;
-@synthesize horizontalDivisions;
+@synthesize verticalDivisions,horizontalDivisions;
 @synthesize indexArrsize;
 @synthesize numVertices, wm, constraintWeight;
 @synthesize image_width, image_height;

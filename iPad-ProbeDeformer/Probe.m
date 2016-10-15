@@ -1,23 +1,28 @@
-//
-//  Probe.m
-//
+/**
+ * @file Probe.m
+ * @brief a class for Probe which carries local transformation and position
+ * @section LICENSE
+ *                   the MIT License
+ * @section Requirements: Eigen 3, DCN library
+ * @version 0.10
+ * @date  Oct. 2016
+ * @author Shizuo KAJI
+ */
 
 #import "Probe.h"
 
 @implementation Probe
 
 // initial position
-@synthesize ix;
-@synthesize iy;
-@synthesize itheta;
+@synthesize ix,iy,itheta;
 
 // current position
-@synthesize x;
-@synthesize y;
-@synthesize theta;
-@synthesize radius;
+@synthesize x, y, theta, radius;
 
+// index of the closest point on the grid to be deformed
 @synthesize closestPt;
+
+// coordinates of the four courners for display
 @synthesize vertices;
 @synthesize textureCoords;
 
@@ -58,7 +63,7 @@
     dcn = DCN<float>(1,0,0,0);
 }
 
-// revert to initial position
+// revert to the initial state
 - (void)initWithX:(float) _ix Y:(float)_iy Radius:(float)_radius{
     x = ix = _ix;
     y = iy = _iy;
@@ -80,7 +85,7 @@
     textureCoords[7] = 0.0;
     [self computeVertices];
 }
-// compute original vertex positions
+// set the initial coordinates for the four corners
 - (void)computeOrigVertex{
     // vertex coordinate
     DCN<float> p(ix,iy,itheta);
@@ -90,12 +95,12 @@
     origVertex[3] = DCN<float>(1,0,ix+radius,iy+radius).actedby(p);
 }
 
-// distance to given point
+// distance to a given point
 - (float)distance2X:(float)lx Y:(float)ly{
     return (x-lx)*(x-lx)+(y-ly)*(y-ly);
 }
 
-// DLB
+// DLB interpolation
 + (DCN<float>)DLB:(NSMutableArray*)probes Weight:(int)w{
     DCN<float>dcn;
     for(Probe* probe in probes)

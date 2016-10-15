@@ -1,6 +1,13 @@
-//
-//  Probe.h
-//
+/**
+ * @file Probe.h
+ * @brief a class for Probe which carries local transformation and position
+ * @section LICENSE
+ *                   the MIT License
+ * @section Requirements: Eigen 3, DCN library
+ * @version 0.10
+ * @date  Oct. 2016
+ * @author Shizuo KAJI
+ */
 
 #import <Foundation/Foundation.h>
 #include "Eigen/Dense"
@@ -19,17 +26,15 @@ using namespace Eigen;
 }
 
 // initial position
-@property GLfloat ix;
-@property GLfloat iy;
-@property float itheta;
+@property GLfloat ix,iy,itheta;
 
 // current position
-@property GLfloat x;
-@property GLfloat y;
-@property float theta;
-@property float radius;
+@property GLfloat x,y,theta,radius;
+
+// index of the closest point on the grid to be deformed
 @property int closestPt;
 
+// coordinates of the four courners for display
 @property GLfloat *vertices;
 @property GLfloat *textureCoords;
 
@@ -41,15 +46,15 @@ using namespace Eigen;
 // set DCN by difference
 - (void)setPosDx:(GLfloat)dx Dy:(GLfloat)dy Dtheta:(GLfloat)dtheta;
 
-// update vertices
+// update the coordinates of the four corners for display
 - (void)computeVertices;
-// setup initial vertex positions
+// setup initial coordinates of the four corners
 - (void)computeOrigVertex;
-// freeze current state
+// set the current state as the initial state
 - (void)freeze;
 // DLB interpolation
 + (DCN<float>)DLB:(NSMutableArray*)probes Weight:(int)w;
-// distance to given point
+// distance to a given point
 - (float)distance2X:(float)lx Y:(float)ly;
 
 @end

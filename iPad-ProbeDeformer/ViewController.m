@@ -1,6 +1,13 @@
-//
-//  ViewController.m
-//  
+/**
+ * @file ViewController.m
+ * @brief the main view class for the probedeformer
+ * @section LICENSE
+ *                   the MIT License
+ * @section Requirements:   Eigen 3, DCN library
+ * @version 0.10
+ * @date  Oct. 2016
+ * @author Shizuo KAJI
+ */
 
 #import "ViewController.h"
 #define DEFAULTIMAGE @"Default.png"
@@ -9,8 +16,7 @@
 #define HDIV 50
 
 @implementation ViewController
-@synthesize effect;
-@synthesize context;
+@synthesize effect,context;
 
 /**
  **  Load and Unload
