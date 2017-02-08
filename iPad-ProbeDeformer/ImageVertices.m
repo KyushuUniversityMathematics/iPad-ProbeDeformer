@@ -20,6 +20,9 @@
 @synthesize probes, probeRadius;
 @synthesize texture, verticesArr, vertices, textureCoordsArr, vertexIndices;
 
+#define BENDING_RESISTANCE 0.2
+
+
 // dealloc
 - (void)dealloc{
     free(verticesArr);
@@ -130,7 +133,7 @@
     newprobe->weight = VectorXf::Zero(numVertices);
     float maxWeight = 0;
     for(int i=0;i<numVertices;i++){
-        newprobe->weight[i] = computeWeight(newprobe.ix, newprobe.iy, origVertex[i].dual[0], origVertex[i].dual[1]);
+        newprobe->weight[i] = inverseDist(newprobe.ix, newprobe.iy, origVertex[i].dual[0], origVertex[i].dual[1]);
         if(maxWeight<newprobe->weight[i]){
             newprobe.closestPt = i;
             maxWeight = newprobe->weight[i];
@@ -141,14 +144,6 @@
     }
 }
 
-// weight computation
-float computeWeight(float x0,float y0,float x1,float y1){
-    float d = (x0-x1)*(x0-x1)+(y0-y1)*(y0-y1);
-    if (d == 0) {
-        return HUGE_VALF;
-    }
-    return 1.0/d;
-}
 
 // initialose mesh vertices as DCN's
 -(void)initOrigVertices{
@@ -226,7 +221,7 @@ float computeWeight(float x0,float y0,float x1,float y1){
     if(wm==HARMONIC){
         op = laplacian;
     }else if(wm==BIHARMONIC){
-        op = 0.2*laplacian*laplacian + laplacian;
+        op = BENDING_RESISTANCE*laplacian*laplacian + laplacian;
     }
     SpMat constraintMat([probes count],numVertices);
     SpMat LHS,RHS;
@@ -242,21 +237,31 @@ float computeWeight(float x0,float y0,float x1,float y1){
     if(solver.info() != Success){
         NSLog(@"Error in computing harmonic weights");
     }
-    RHS = constraintWeight * constraintMat.transpose();
+    float targetVal = 3.0;
+    RHS = targetVal * constraintWeight * constraintMat.transpose();
     SpMat Sol = solver.solve(RHS);
     [probes enumerateObjectsUsingBlock:^(Probe *probe, NSUInteger i, BOOL *stop) {
         VectorXf W = VectorXf(Sol.col(i));
-        probe->weight = W.array().max(0);
+//        probe->weight = W.array().max(0);       // to avoid minus weights
+        probe->weight = W.array().exp()/W.array().exp().sum();    // softmax
     }];
 }
 
 -(void) euclideanWeighting{
     for (Probe *probe in probes){
         for(int i=0;i<numVertices;i++){
-            probe->weight[i] = computeWeight(probe.ix, probe.iy, origVertex[i].dual[0], origVertex[i].dual[1]);
+            probe->weight[i] = inverseDist(probe.ix, probe.iy, origVertex[i].dual[0], origVertex[i].dual[1]);
         }
     };
 }
 
+// weight computation
+float inverseDist(float x0,float y0,float x1,float y1){
+    float d = (x0-x1)*(x0-x1)+(y0-y1)*(y0-y1);
+    if (d == 0) {
+        return HUGE_VALF;
+    }
+    return 1.0/d;
+}
 
 @end
