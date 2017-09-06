@@ -354,6 +354,35 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [mainImage removeProbes];
 }
 
+// snapshot
+- (IBAction)pushSaveImg:(UIBarButtonItem *)sender{
+    NSLog(@"saving image");
+    UIImage* image = [(GLKView*)self.view snapshot];
+    UIImageWriteToSavedPhotosAlbum(image, self, @selector(savingImageIsFinished:didFinishSavingWithError:contextInfo:), nil);
+}
+- (void) savingImageIsFinished:(UIImage *)_image didFinishSavingWithError:(NSError *)_error contextInfo:(void *)_contextInfo{
+    NSMutableString *title = [NSMutableString string];
+    NSMutableString *msg = [NSMutableString string];
+    if(_error){
+        [title setString:@"error"];
+        [msg setString:@"Save failed."];
+    }else{
+        [title setString:@"Saved"];
+        [msg setString:@"Image saved in Camera Roll"];
+    }
+    UIAlertController * ac = [UIAlertController alertControllerWithTitle:title
+                                                                 message:msg
+                                                          preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction * okAction =
+    [UIAlertAction actionWithTitle:@"OK"
+                             style:UIAlertActionStyleDefault
+                           handler:^(UIAlertAction * action) {
+                               NSLog(@"OK button tapped.");
+                           }];
+    [ac addAction:okAction];
+    [self presentViewController:ac animated:YES completion:nil];
+}
+
 // Load new image
 - (IBAction)pushButton_ReadImage:(UIBarButtonItem *)sender {
     if([UIImagePickerController

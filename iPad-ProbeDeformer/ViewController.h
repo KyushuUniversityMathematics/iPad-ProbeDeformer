@@ -14,7 +14,6 @@
 #import <OpenGLES/ES2/glext.h>
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import <CoreFoundation/CoreFoundation.h>
 #import <CoreVideo/CVOpenGLESTextureCache.h>
 #import <CoreFoundation/CoreFoundation.h>
 #import "ImageVertices.h"
@@ -58,5 +57,6 @@
 - (IBAction)unwindToFirstScene:(UIStoryboardSegue *)unwindSegue;
 - (IBAction)pushSeg:(UISegmentedControl *)sender;
 - (IBAction)pushCamera:(UISwitch *)sender;
+- (IBAction)pushSaveImg:(UIBarButtonItem *)sender;
 
 @end
