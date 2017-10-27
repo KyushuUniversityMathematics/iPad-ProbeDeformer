@@ -161,12 +161,6 @@
     }
 }
 
-// initialize probes
--(void) initializeProbes{
-    for (Probe *probe in probes)
-        [probe initWithX:probe.ix Y:probe.iy Radius:probeRadius];
-}
-
 // freeze probes
 -(void) freezeProbes{
     DCN<float> v;
@@ -255,7 +249,7 @@
     };
 }
 
-// weight computation
+// inverse of the 2-norm
 float inverseDist(float x0,float y0,float x1,float y1){
     float d = (x0-x1)*(x0-x1)+(y0-y1)*(y0-y1);
     if (d == 0) {

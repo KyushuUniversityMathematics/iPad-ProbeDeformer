@@ -17,7 +17,7 @@
                         <viewControllerLayoutGuide type="top" id="TiJ-Yn-mIF"/>
                         <viewControllerLayoutGuide type="bottom" id="Jjb-t6-CVp"/>
                     </layoutGuides>
-                    <glkView key="view" contentMode="scaleToFill" id="3se-qz-xqx">
+                    <glkView key="view" contentMode="scaleToFill" misplaced="YES" id="3se-qz-xqx">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="980"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -43,14 +43,28 @@
                                             </connections>
                                         </segmentedControl>
                                     </barButtonItem>
-                                    <barButtonItem style="plain" id="Q3H-WX-Zy2">
-                                        <switch key="customView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="l3L-9P-GMm">
-                                            <rect key="frame" x="197" y="6.5" width="51" height="31"/>
+                                    <barButtonItem style="plain" id="cm8-wD-JO3">
+                                        <segmentedControl key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="a8l-B1-LTZ" userLabel="cameraSw">
+                                            <rect key="frame" x="197" y="7" width="121" height="30"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <segments>
+                                                <segment title="Img"/>
+                                                <segment title="Cam"/>
+                                            </segments>
                                             <connections>
-                                                <action selector="pushCamera:" destination="SZV-WD-TEh" eventType="valueChanged" id="Csv-SP-vvM"/>
+                                                <action selector="pushCameraSw:" destination="SZV-WD-TEh" eventType="valueChanged" id="BnO-OH-lmw"/>
                                             </connections>
-                                        </switch>
+                                        </segmentedControl>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" id="vfg-QK-faH">
+                                        <segmentedControl key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="H9I-le-37w" userLabel="probeSw">
+                                            <rect key="frame" x="328" y="7" width="121" height="30"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <segments>
+                                                <segment title="Show Prb"/>
+                                                <segment title="Hide Prb"/>
+                                            </segments>
+                                        </segmentedControl>
                                     </barButtonItem>
                                     <barButtonItem title="Save" id="406-dn-jOp" userLabel="Save">
                                         <connections>
@@ -91,7 +105,8 @@
                     <toolbarItems/>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="cameraSw" destination="l3L-9P-GMm" id="pIu-S7-bDX"/>
+                        <outlet property="cameraSw" destination="a8l-B1-LTZ" id="GGx-zp-vta"/>
+                        <outlet property="probeSw" destination="H9I-le-37w" id="hhm-ym-ORa"/>
                     </connections>
                 </glkViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
@@ -133,8 +148,8 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DoubleTap: Add/Remove a probe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bVf-hW-bSa">
-                                <rect key="frame" x="20" y="85" width="231" height="21"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="DoubleTap: Add/Remove a probe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bVf-hW-bSa">
+                                <rect key="frame" x="20" y="85" width="272" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="231" id="QOQ-5l-bze"/>
                                 </constraints>
@@ -170,14 +185,26 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Camera: Process live camera input" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ruq-mY-rel">
-                                <rect key="frame" x="20" y="282" width="313" height="21"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Euc, Har, BIH: weighting methods (Eucledian distance, Harmonic, bi-Harmonic)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F8E-Sw-OwI">
+                                <rect key="frame" x="20" y="282" width="661" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Euc, Har, BIH: weighting methods (Eucledian distance, Harmonic, bi-Harmonic)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F8E-Sw-OwI">
-                                <rect key="frame" x="20" y="311" width="661" height="21"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Show/Hide Prb: Use to temporarily hide probes" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bIF-YY-nxU">
+                                <rect key="frame" x="20" y="340" width="359" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Save: Save image to Camera Roll" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Em-uv-hMf">
+                                <rect key="frame" x="20" y="369" width="250" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Img/Cam: Select to process image or live camera input" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ruq-mY-rel">
+                                <rect key="frame" x="20" y="311" width="417" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>

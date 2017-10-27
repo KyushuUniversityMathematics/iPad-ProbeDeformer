@@ -62,7 +62,6 @@ typedef enum _weightMode {EUCLIDEAN, HARMONIC, BIHARMONIC} weightMode;
 - (void)makeNewProbeWithCGPoint:(CGPoint)p;
 -(void)initOrigVertices;
 // initialize probes
--(void) initializeProbes;
 -(void) freezeProbes;
 -(void) removeProbes;
 // weighting

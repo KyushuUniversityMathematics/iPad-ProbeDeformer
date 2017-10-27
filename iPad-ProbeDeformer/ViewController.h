@@ -48,7 +48,8 @@
 }
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
-@property (weak, nonatomic) IBOutlet UISwitch *cameraSw;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *cameraSw;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *probeSw;
 
 - (void)setupGL;
 - (void)tearDownGL;
@@ -56,7 +57,7 @@
 - (IBAction)pushButton_Initialize:(UIBarButtonItem *)sender;
 - (IBAction)unwindToFirstScene:(UIStoryboardSegue *)unwindSegue;
 - (IBAction)pushSeg:(UISegmentedControl *)sender;
-- (IBAction)pushCamera:(UISwitch *)sender;
+- (IBAction)pushCameraSw:(UISegmentedControl *)sender;
 - (IBAction)pushSaveImg:(UIBarButtonItem *)sender;
 
 @end

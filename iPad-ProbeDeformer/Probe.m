@@ -43,7 +43,7 @@
     [self computeVertices];
 }
 
-// compute vertices of probe
+// compute the vertex location of a probe
 - (void)computeVertices{
     DCN<float> p;
     for(int i=0;i<4;i++) {
@@ -58,12 +58,13 @@
     ix = x;
     iy = y;
     itheta = theta;
-    for(int i=0;i<4;i++)
-        origVertex[i].actedby(dcn);
+    for(int i=0;i<4;i++){
+        origVertex[i] = origVertex[i].actedby(dcn);
+    }
     dcn = DCN<float>(1,0,0,0);
 }
 
-// revert to the initial state
+// initialise
 - (void)initWithX:(float) _ix Y:(float)_iy Radius:(float)_radius{
     x = ix = _ix;
     y = iy = _iy;

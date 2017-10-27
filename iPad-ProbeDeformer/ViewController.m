@@ -34,7 +34,7 @@
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
     [EAGLContext setCurrentContext:self.context];
-    
+
     cameraMode = false;
     
     // gestures
@@ -50,7 +50,6 @@
     if (error){
         NSLog(@"Error loading texture from image: %@",error);
     }
-    
     [self setupGL];
 }
 
@@ -125,20 +124,18 @@
 }
 
 
-// Render all
-- (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
-{
+// update glview
+- (void)glkView:(GLKView *)view drawInRect:(CGRect)rect{
     glClearColor(0, 104.0/255.0, 55.0/255.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
-    
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    
     [self.effect prepareToDraw];
 
     [self renderImage];
-    for(Probe *probe in mainImage.probes)
-        [self renderProbe:probe];
+    if(_probeSw.selectedSegmentIndex==0){
+        [self renderProbe:mainImage.probes];
+    }
 }
 // Render image
 - (void)renderImage{
@@ -166,7 +163,7 @@
     }
 }
 // Render probe
-- (void)renderProbe:(Probe*)probe{
+- (void)renderProbe:(NSMutableArray *)probes{
     self.effect.texture2d0.name = probeTexture.name;
     self.effect.texture2d0.enabled = YES;
 
@@ -175,10 +172,11 @@
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, probe.vertices);
-    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, probe.textureCoords);
-    glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-
+    for(Probe *probe in probes){
+        glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, probe.vertices);
+        glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, probe.textureCoords);
+        glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+    }
 }
 
 /**
@@ -448,21 +446,26 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 }
 
 // Camera
--(IBAction)pushCamera:(UISwitch *)sender{
+-(IBAction)pushCameraSw:(UISegmentedControl *)sender{
 //    [mainImage removeProbes];
-    if([sender isOn]){
-        @try {
-            [self initializeCamera];
-            [self cameraOrientation];
-            NSLog(@"Camera ON");
-        }
-        @catch (NSException *exception) {
-            NSLog(@"camera init error : %@", exception);
-        }
-    }else{
-        [self stopCamera];
-        [mainImage loadImage:[ UIImage imageNamed:DEFAULTIMAGE ]];
-        NSLog(@"Camera OFF");
+    int wm = (int)sender.selectedSegmentIndex;
+    switch(wm){
+        case 0:
+            [self stopCamera];
+            [mainImage loadImage:[ UIImage imageNamed:DEFAULTIMAGE ]];
+            NSLog(@"Camera OFF");
+            break;
+        case 1:
+            @try {
+                [self initializeCamera];
+                [self cameraOrientation];
+                NSLog(@"Camera ON");
+            }
+            @catch (NSException *exception) {
+                NSLog(@"camera init error : %@", exception);
+                _cameraSw.selectedSegmentIndex = 0;
+            }
+            break;
     }
     [self setupScreen];
 }
@@ -509,7 +512,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 -(void) stopCamera{
     cameraMode = false;
-    _cameraSw.on = false;
+    _cameraSw.selectedSegmentIndex = 0;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if ([session isRunning]){
             [session stopRunning];
