@@ -38,7 +38,7 @@
     x += ldx;
     y += ldy;
     theta += ldtheta;
-    DCN<float> rot(ix,iy,theta);
+    DCN<float> rot(ix,iy,theta-itheta);
     dcn = DCN<float>(1,0,(x-ix)/2.0,(y-iy)/2.0) * rot;
     [self computeVertices];
 }
@@ -58,9 +58,7 @@
     ix = x;
     iy = y;
     itheta = theta;
-    for(int i=0;i<4;i++){
-        origVertex[i] = origVertex[i].actedby(dcn);
-    }
+    [self computeOrigVertex];
     dcn = DCN<float>(1,0,0,0);
 }
 
