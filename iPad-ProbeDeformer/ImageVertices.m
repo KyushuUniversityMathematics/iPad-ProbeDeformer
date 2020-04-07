@@ -15,13 +15,14 @@
 
 @synthesize verticalDivisions,horizontalDivisions;
 @synthesize indexArrsize;
-@synthesize numVertices, wm, constraintWeight;
+@synthesize numVertices, wm, dm, constraintWeight;
 @synthesize image_width, image_height;
-@synthesize probes, probeRadius;
+@synthesize probes, probeRadius, prbSizeMultiplier;
 @synthesize texture, verticesArr, vertices, textureCoordsArr, vertexIndices;
+@synthesize showPrb,symmetric,fixRadius;
 
 #define BENDING_RESISTANCE 0.2
-
+#define EPSILON 1e-10
 
 // dealloc
 - (void)dealloc{
@@ -39,9 +40,11 @@
         horizontalDivisions = lhorizontalDivisions;
         indexArrsize = verticalDivisions * (horizontalDivisions+1) * 2;
         numVertices = (verticalDivisions+1) * (horizontalDivisions+1);
-        probeRadius = 2.0*image_width/(float)horizontalDivisions;
         constraintWeight = numVertices * 1.0;
+        prbSizeMultiplier = 1.0;
         wm = EUCLIDEAN;
+        dm = DCNBlend;
+        showPrb = true;
         [self computeLaplacian];
 
         //malloc
@@ -98,25 +101,117 @@
     image_width = (float)image.size.width;
     image_height = (float)image.size.height;
     // compute touch radius for each vertex
-    probeRadius = 2.0*image_width/(float)horizontalDivisions;
+    probeRadius = 1.8*image_width/(float)horizontalDivisions;
     [self initOrigVertices];
     [self deform];
 }
 
 // deform mesh according to probes
 - (void)deform{
-    DCN<float> u,v;
-    if([probes count]>0){
-        for(int i=0;i<numVertices;i++){
-            v = [Probe DLB:probes Weight:i];
-            u = origVertex[i].actedby(v);
-            vertices[2*i] = u.dual[0];
-            vertices[2*i+1] = u.dual[1];
-        }
-    }else{
+    int count = [probes count];
+    // when there's no probe, set to the original coordinates
+    if(count == 0){
         for(int i=0;i<numVertices;i++){
             vertices[2*i] = origVertex[i].dual[0];
             vertices[2*i+1] = origVertex[i].dual[1];
+        }
+//    }else if(count == 1){
+//        Probe *probe = [probes objectAtIndex:0];
+//        // just translate
+//        for(int i=0;i<numVertices;i++){
+//            vertices[2*i] = origVertex[i].dual[0] + probe.x-probe.ix;
+//            vertices[2*i+1] = origVertex[i].dual[1] + probe.y-probe.iy;
+//        }
+    }else{
+        // deformation by DCN blend
+        if(dm == DCNBlend){
+            DCN<float> u,v;
+            for(int i=0;i<numVertices;i++){
+                v = [Probe DLB:probes Weight:i];
+                u = origVertex[i].actedby(v);
+                vertices[2*i] = u.dual[0];
+                vertices[2*i+1] = u.dual[1];
+            }
+        // defirmation by linear blending
+        }else if(dm == LinearBlend){
+            std::vector<Matrix2f> M(count);
+            std::vector<Vector2f> trans(count);
+            int j=0;
+            for(Probe *probe in probes){
+                Vector2f p(probe.ix,probe.iy);
+                M[j] << cos(probe.theta),-sin(probe.theta),sin(probe.theta),cos(probe.theta);
+                p = M[j]*p;
+                trans[j] << probe.x-p[0], probe.y-p[1];
+                j++;
+            }
+            for(int i=0;i<numVertices;i++){
+                Vector2f v(origVertex[i].dual[0],origVertex[i].dual[1]),u(0,0);
+                double sum_weight=0;
+                int j=0;
+                for(Probe *probe in probes){
+                    u += (probe.radius*probe.radius*probe->weight[i])*(M[j]*v+trans[j]);
+                    sum_weight += (probe.radius*probe.radius*probe->weight[i]);
+                    j++;
+                }
+                u /= sum_weight;
+                vertices[2*i] = u[0];
+                vertices[2*i+1] = u[1];
+            }
+        // deformation by MLS
+        }else if(dm == MLS_RIGID || dm == MLS_SIM){
+            std::vector<double> w(count),prbRadius(count);
+            std::vector<Vector2f> p(count),q(count);
+            int j=0;
+            for(Probe *probe in probes){
+                p[j] << probe.ix, probe.iy;
+                q[j] << probe.x, probe.y;
+                prbRadius[j] = probe.radius;
+                j++;
+            }
+            for(int i=0;i<numVertices;i++){
+                Vector2f v(origVertex[i].dual[0],origVertex[i].dual[1]),u;
+                for(int j=0;j<count;j++){
+                    w[j] = 1/fmax( (p[j][0]-v[0])*(p[j][0]-v[0])+(p[j][1]-v[1])*(p[j][1]-v[1]) ,EPSILON);
+                    w[j] *= prbRadius[j];
+                }
+                // barycentre of the original (p) and the current (q) touched points
+                Vector2f pcenter = Vector2f::Zero();
+                Vector2f qcenter = Vector2f::Zero();
+                float wsum = 0;
+                for(int j=0;j<count;j++){
+                    wsum += w[j];
+                    pcenter += w[j] * p[j];
+                    qcenter += w[j] * q[j];
+                }
+                pcenter /= wsum;
+                qcenter /= wsum;
+                // relative coordinates
+                std::vector<Vector2f> ph(count), qh(count);
+                for(int j=0;j<count;j++){
+                    ph[j] = p[j]-pcenter;
+                    qh[j] = q[j]-qcenter;
+                }
+                // determine matrix
+                Matrix2f M,P,Q;
+                M = Matrix2f::Zero();
+                float mu = 0;
+                for(int j=0;j<count;j++){
+                    P << ph[j][0], ph[j][1], ph[j][1], -ph[j][0];
+                    Q << qh[j][0], qh[j][1], qh[j][1], -qh[j][0];
+                    M += w[j]*Q*P;
+                    mu += w[j] * ph[j].squaredNorm();
+                }
+                // ASAP
+                if(dm == MLS_SIM){
+                    u = M * (v-pcenter) / mu + qcenter;
+                }else{
+                // ARAP
+                    u = M * (v-pcenter) / mu;
+                    u = (v-pcenter).norm() * u.normalized() + qcenter;
+                }
+                vertices[2*i] = u[0];
+                vertices[2*i+1] = u[1];
+            }
         }
     }
     for(int i=0;i<indexArrsize;i++){
@@ -126,15 +221,15 @@
 }
 
 // add new probe
-- (void)makeNewProbeWithCGPoint:(CGPoint)p{
+- (Probe *)makeNewProbeWithCGPoint:(CGPoint)p{
     Probe *newprobe = [[Probe alloc] init];
     [probes addObject:newprobe];
-    [newprobe initWithX:p.x Y:p.y Radius:probeRadius];
+    [newprobe initWithX:p.x Y:p.y Radius:probeRadius mult:prbSizeMultiplier];
     newprobe->weight = VectorXf::Zero(numVertices);
     float maxWeight = 0;
     for(int i=0;i<numVertices;i++){
         newprobe->weight[i] = inverseDist(newprobe.ix, newprobe.iy, origVertex[i].dual[0], origVertex[i].dual[1]);
-        if(maxWeight<newprobe->weight[i]){
+        if(maxWeight < newprobe->weight[i]){
             newprobe.closestPt = i;
             maxWeight = newprobe->weight[i];
         }
@@ -142,10 +237,11 @@
     if(wm == HARMONIC || wm == BIHARMONIC){
         [self harmonicWeighting];
     }
+    return newprobe;
 }
 
 
-// initialose mesh vertices as DCN's
+// initialise mesh vertices
 -(void)initOrigVertices{
     int count=0;
     float stX = - image_width / 2;
@@ -161,24 +257,17 @@
     }
 }
 
-// freeze probes
+// make current probes states and image vertices to the initial (undeformed)
 -(void) freezeProbes{
-    DCN<float> v;
-    if([probes count]==0) return;
+//    if([probes count]==0) return;
     for(int i=0;i<numVertices;i++){
-        v = [Probe DLB:probes Weight:i];
-        origVertex[i] = origVertex[i].actedby(v);
+        origVertex[i].dual[0] = vertices[2*i];
+        origVertex[i].dual[1] = vertices[2*i+1];
     }
     for (Probe *probe in probes)
         [probe freeze];
-}
-// remove probes
--(void) removeProbes{
-    [self initOrigVertices];
-    [probes removeAllObjects];
     [self deform];
 }
-
 
 // compute laplacian matrix from edge array
 -(void)computeLaplacian{
@@ -257,5 +346,6 @@ float inverseDist(float x0,float y0,float x1,float y1){
     }
     return 1.0/d;
 }
+
 
 @end

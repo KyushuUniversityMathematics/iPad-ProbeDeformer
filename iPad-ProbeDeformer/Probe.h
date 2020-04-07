@@ -15,7 +15,7 @@
 
 using namespace Eigen;
 
-@interface Probe : NSObject{
+@interface Probe : NSObject {
     // dcn of transformation
     DCN<float> dcn;
     // dcn of initial vertex position    
@@ -23,27 +23,29 @@ using namespace Eigen;
     @public
     // effect for each vertex of mesh
     VectorXf weight;
+    // coordinates of the four courners for display
+    GLfloat vertices[8];
+    GLfloat textureCoords[8];
 }
 
 // initial position
 @property GLfloat ix,iy,itheta;
 
 // current position
-@property GLfloat x,y,theta,radius;
+@property GLfloat x,y,theta,radius,szMultiplier;
 
 // index of the closest point on the grid to be deformed
 @property int closestPt;
 
-// coordinates of the four courners for display
-@property GLfloat *vertices;
-@property GLfloat *textureCoords;
 
 
 // init
 - (void)dealloc;
-- (void)initWithX:(float) _ix Y:(float)_iy Radius:(float)_radius;
+- (id)copyWithZone:(NSZone*)zone;
+- (void)initWithX:(float) _ix Y:(float)_iy Radius:(float)_radius mult:(float)_mult;
 
-// set DCN by difference
+// set probe state
+- (void)setPosX:(GLfloat)lx Y:(GLfloat)ly Theta:(GLfloat)ltheta;
 - (void)setPosDx:(GLfloat)dx Dy:(GLfloat)dy Dtheta:(GLfloat)dtheta;
 
 // update the coordinates of the four corners for display

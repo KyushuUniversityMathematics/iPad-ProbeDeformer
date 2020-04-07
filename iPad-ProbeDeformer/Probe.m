@@ -17,20 +17,23 @@
 @synthesize ix,iy,itheta;
 
 // current position
-@synthesize x, y, theta, radius;
+@synthesize x, y, theta, radius, szMultiplier;
 
 // index of the closest point on the grid to be deformed
 @synthesize closestPt;
 
-// coordinates of the four courners for display
-@synthesize vertices;
-@synthesize textureCoords;
-
-
 // init
 - (void)dealloc{
-    free(textureCoords);
-    free(vertices);
+}
+
+// set probe state
+- (void)setPosX:(GLfloat)lx Y:(GLfloat)ly Theta:(GLfloat)ltheta{
+    x = lx;
+    y = ly;
+    theta = ltheta;
+    DCN<float> rot(ix,iy,theta-itheta);
+    dcn = DCN<float>(1,0,(x-ix)/2.0,(y-iy)/2.0) * rot;
+    [self computeVertices];
 }
 
 // set probe state by difference
@@ -60,19 +63,18 @@
     itheta = theta;
     [self computeOrigVertex];
     dcn = DCN<float>(1,0,0,0);
+    [self computeVertices];
 }
 
 // initialise
-- (void)initWithX:(float) _ix Y:(float)_iy Radius:(float)_radius{
+- (void)initWithX:(float) _ix Y:(float)_iy Radius:(float)_radius mult:(float)_mult{
     x = ix = _ix;
     y = iy = _iy;
     radius = _radius;
     theta = 0.0f;
     itheta = 0.0f;
     dcn = DCN<float>(1,0,0,0);
-    vertices = (GLfloat *)malloc(8*sizeof(GLfloat));
-    textureCoords = (GLfloat *)malloc(8*sizeof(GLfloat));
-    [self computeOrigVertex];
+    szMultiplier = _mult;
     // texture coordinate
     textureCoords[0] = 1.0;
     textureCoords[1] = 1.0;
@@ -82,17 +84,21 @@
     textureCoords[5] = 0.0;
     textureCoords[6] = 0.0;
     textureCoords[7] = 0.0;
-    [self computeVertices];
+    // set vertices
+    [self computeOrigVertex];
 }
 // set the initial coordinates for the four corners
 - (void)computeOrigVertex{
     // vertex coordinate
+    float r = radius*szMultiplier;
     DCN<float> p(ix,iy,itheta);
-    origVertex[0] = DCN<float>(1,0,ix-radius,iy-radius).actedby(p);
-    origVertex[1] = DCN<float>(1,0,ix+radius,iy-radius).actedby(p);
-    origVertex[2] = DCN<float>(1,0,ix-radius,iy+radius).actedby(p);
-    origVertex[3] = DCN<float>(1,0,ix+radius,iy+radius).actedby(p);
+    origVertex[0] = DCN<float>(1,0,ix-r,iy-r).actedby(p);
+    origVertex[1] = DCN<float>(1,0,ix+r,iy-r).actedby(p);
+    origVertex[2] = DCN<float>(1,0,ix-r,iy+r).actedby(p);
+    origVertex[3] = DCN<float>(1,0,ix+r,iy+r).actedby(p);
+    [self computeVertices];
 }
+
 
 // distance to a given point
 - (float)distance2X:(float)lx Y:(float)ly{

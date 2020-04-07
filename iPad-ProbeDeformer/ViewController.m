@@ -4,45 +4,74 @@
  * @section LICENSE
  *                   the MIT License
  * @section Requirements:   Eigen 3, DCN library
- * @version 0.10
- * @date  Oct. 2016
+ * @version 0.20
+ * @date  Oct. 2017
  * @author Shizuo KAJI
  */
 
 #import "ViewController.h"
-#define DEFAULTIMAGE @"Default.png"
+
 #define PROBEIMAGE @"arrow"
-#define VDIV 50
-#define HDIV 50
+#define VDIV 100
+#define HDIV 100
+#define EPSILON 1e-8
+#define ANICOM false
 
 @implementation ViewController
 @synthesize effect,context;
+@synthesize prbSizeSl;
+
+// default images
++ (NSArray *)images{
+    static NSArray *_images;
+    static dispatch_once_t onceToken;
+    if(ANICOM){
+        dispatch_once(&onceToken, ^{
+            _images = @[@"Dog.png",@"Cat.png",@"Bulldog.png",@"Chihuahua.png",@"Pomeranian.png",
+                        @"Cat1.png",@"Cat2.png",@"Cat3.png",@"Cat4.png",
+                        @"Meerkat.png",@"Pomeranian.png",@"Rabbit.png",@"Toypoodle.png"];
+        });
+    }else{
+        dispatch_once(&onceToken, ^{
+            _images = @[@"Default.png"];
+        });
+    }
+    return _images;
+}
 
 /**
  **  Load and Unload
  **/
-- (void)viewDidLoad
-{
+- (void)viewDidLoad{
     [super viewDidLoad];
     
-    self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    // File Dialog
+    self.fileViewController = [[FileViewController alloc] init];
+    [self addChildViewController:self.fileViewController];
+    [self.fileViewController didMoveToParentViewController:self];
+    self.fileViewController.delegate = self;
     
+    // OpenGL
+    self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     if (!self.context) {
         NSLog(@"Failed to create ES context");
     }
-    
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
     [EAGLContext setCurrentContext:self.context];
-
-    cameraMode = false;
+    view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
     
+    // default parameter
+    cameraMode = false;
+    undoProbe = selectedProbe = NULL;
+    image_idx = 0;
+
     // gestures
     [self createGestureRecognizers];
 
     // load default image
     mainImage = [[ImageVertices alloc] initWithVDiv:VDIV HDiv:HDIV];
-    [mainImage loadImage:[ UIImage imageNamed:DEFAULTIMAGE ]];
+    [mainImage loadImage:[UIImage imageNamed:[[self class] images][image_idx]]];
     NSError *error;
     NSString *path = [[NSBundle mainBundle] pathForResource:PROBEIMAGE ofType:@"png"];
     NSDictionary* options = @{GLKTextureLoaderOriginBottomLeft: @YES};
@@ -51,26 +80,29 @@
         NSLog(@"Error loading texture from image: %@",error);
     }
     [self setupGL];
+
+    mainImage.symmetric = false;
+    mainImage.fixRadius = true;
 }
 
-- (void)dealloc
-{    
+- (void)dealloc{
     [self tearDownGL];
-    
     if ([EAGLContext currentContext] == self.context) {
         [EAGLContext setCurrentContext:nil];
     }
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
+- (void)viewDidUnload {
+    [super viewDidUnload];
+    [self tearDownGL];
+    self.context = nil;
+}
 
+- (void)didReceiveMemoryWarning{
+    [super didReceiveMemoryWarning];
     if ([self isViewLoaded] && ([[self view] window] == nil)) {
         self.view = nil;
-        
         [self tearDownGL];
-        
         if ([EAGLContext currentContext] == self.context) {
             [EAGLContext setCurrentContext:nil];
         }
@@ -123,17 +155,17 @@
 {
 }
 
-
 // update glview
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect{
-    glClearColor(0, 104.0/255.0, 55.0/255.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//    glClear(GL_COLOR_BUFFER_BIT);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     [self.effect prepareToDraw];
 
     [self renderImage];
-    if(_probeSw.selectedSegmentIndex==0){
+    if(mainImage.showPrb && mainImage.prbSizeMultiplier > 0.25){
         [self renderProbe:mainImage.probes];
     }
 }
@@ -173,8 +205,8 @@
     glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
     
     for(Probe *probe in probes){
-        glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, probe.vertices);
-        glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, probe.textureCoords);
+        glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, probe->vertices);
+        glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, probe->textureCoords);
         glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
     }
 }
@@ -187,14 +219,17 @@
                                                      initWithTarget:self action:@selector(handleSingleDoubleTap:)];
     singleFingerDoubleTap.numberOfTapsRequired = 2;
     [self.view addGestureRecognizer:singleFingerDoubleTap];
+    //
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc]
                                           initWithTarget:self action:@selector(handlePanGesture:)];
     panGesture.delegate = self;
     [self.view addGestureRecognizer:panGesture];
+    //
 	UIRotationGestureRecognizer *rotateGesture = [[UIRotationGestureRecognizer alloc]
 												  initWithTarget:self action:@selector(handleRotateGesture:)];
     rotateGesture.delegate = self;
 	[self.view addGestureRecognizer:rotateGesture];
+    //
     UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
                                               initWithTarget:self action:@selector(handlePinchGesture:)];
     [self.view addGestureRecognizer:pinchGesture];
@@ -202,8 +237,21 @@
 // Simultaneous Gesture Recognition
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
+//    if ([gestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]] ||
+//        [otherGestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
+//        return NO;
+//    }
     return YES;
 }
+
+// prevent view's gesture recognition from stealing from toolbar
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
+    if (touch.view == self.view){
+        return YES;
+    }
+    return  NO;
+}
+
 // Double tap
 - (void)handleSingleDoubleTap:(id)sender {
     // touch position
@@ -214,17 +262,48 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     // Freeze current probe states
     [mainImage freezeProbes];
     // If existing probe is touched, delete it
-    bool isNew = true;
+    undoProbe = NULL;
+    float clickRadius = mainImage.probeRadius*mainImage.probeRadius*mainImage.prbSizeMultiplier * 5;
     for(Probe *probe in mainImage.probes){
-        if ([probe distance2X:p.x Y:p.y]<mainImage.probeRadius*mainImage.probeRadius*1.5) {
+        if ([probe distance2X:p.x Y:p.y]<clickRadius) {
+            undoProbe = probe;
             [mainImage.probes removeObject:probe];
-            isNew = false;
             break;
         }
     }
     // if no probe is deleted, creat new one
-    if(isNew){
+    if(undoProbe == NULL){
         [mainImage makeNewProbeWithCGPoint:p];
+        // symmetrise only when off centre
+        if(mainImage.symmetric && fabs(p.x) > mainImage.probeRadius){
+            p.x = -p.x;
+            [mainImage makeNewProbeWithCGPoint:p];
+        }
+    }
+}
+
+// find which probe is touched and select it
+- (void)gestureBegan:(CGPoint)p{
+    selectedProbe = NULL;
+    selectedProbePair = NULL;
+    float clickRadius = mainImage.probeRadius*mainImage.probeRadius*mainImage.prbSizeMultiplier * 3;
+    for(Probe *probe in mainImage.probes){
+        if ([probe distance2X:p.x Y:p.y]<clickRadius) {
+            selectedProbe = probe;
+            undoX = probe.x;
+            undoY = probe.y;
+            undoTheta = probe.theta;
+            undoRadius = probe.radius;
+            if(mainImage.symmetric){
+                for(Probe *probePair in mainImage.probes){
+                    if ([probePair distance2X:-probe.x Y:probe.y]<EPSILON && selectedProbe != probePair) {
+                        selectedProbePair = probePair;
+                        break;
+                    }
+                }
+            }
+            break;
+        }
     }
 }
 
@@ -235,14 +314,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             CGPoint p =[sender locationInView:self.view];
             p.x = (p.x - screen.width/2.0)*ratio_width;
             p.y = (screen.height/2.0 - p.y)*ratio_height;
-            // find which probe is touched
-            selectedProbe = NULL;
-            for(Probe *probe in mainImage.probes){
-                if ([probe distance2X:p.x Y:p.y]<mainImage.probeRadius*mainImage.probeRadius*1.5) {
-                    selectedProbe = probe;
-                    break;
-                }
-            }
+            [self gestureBegan:p];
             break;
         }
         case UIGestureRecognizerStateChanged: {
@@ -256,8 +328,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             if(selectedProbe != NULL){
                 // Displace the selected probe
                 [selectedProbe setPosDx:dp.x Dy:-dp.y Dtheta:0.0f];
-            }else{
-                // Displace all probes
+                if(selectedProbePair != NULL){
+                    [selectedProbePair setPosDx:-dp.x Dy:-dp.y Dtheta:0.0f];
+                }
+            }else if(!ANICOM){
+                // Displace all probes; this makes a mess when symmetrised.
                 for(Probe *probe in mainImage.probes){
                     [probe setPosDx:dp.x Dy:-dp.y Dtheta:0.0f];
                 }
@@ -266,6 +341,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             break;
         }
         case UIGestureRecognizerStateEnded: {
+            undoProbe = selectedProbe;
             break;
         }
         default:
@@ -275,18 +351,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 // Rotation
 - (void)handleRotateGesture:(UIRotationGestureRecognizer*)sender {
+    // for MLS, ignore the gesture (for some reasons, it is very slow
+    if(mainImage.dm == MLS_RIGID || mainImage.dm == MLS_SIM) return;
     switch (sender.state) {
         case UIGestureRecognizerStateBegan: {
             CGPoint p =[sender locationInView:self.view];
             p.x = (p.x - screen.width/2.0)*ratio_width;
             p.y = (screen.height/2.0 - p.y)*ratio_height;
-            selectedProbe = NULL;
-            for(Probe *probe in mainImage.probes){
-                if ([probe distance2X:p.x Y:p.y]<mainImage.probeRadius*mainImage.probeRadius*1.5) {
-                    selectedProbe = probe;
-                    break;
-                }
-            }
+            [self gestureBegan:p];
             break;
         }
         case UIGestureRecognizerStateChanged: {
@@ -294,12 +366,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                 float dtheta = [sender rotation];
                 [sender setRotation:0];
                 [selectedProbe setPosDx:0.0f Dy:0.0f Dtheta:-dtheta];
+                if(selectedProbePair != NULL){
+                    [selectedProbePair setPosDx:0.0f Dy:0.0f Dtheta:dtheta];
+                }
             }
             [mainImage deform];
             break;
         }
         case UIGestureRecognizerStateEnded: {
-            selectedProbe = NULL;
+            undoProbe = selectedProbe;
             break;
         }
         default:
@@ -313,27 +388,32 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             CGPoint p =[sender locationInView:self.view];
             p.x = (p.x - screen.width/2.0)*ratio_width;
             p.y = (screen.height/2.0 - p.y)*ratio_height;
-            selectedProbe = NULL;
-            for(Probe *probe in mainImage.probes){
-                if ([probe distance2X:p.x Y:p.y]<mainImage.probeRadius*mainImage.probeRadius*1.5) {
-                    selectedProbe = probe;
-                    break;
-                }
-            }
+            [self gestureBegan:p];
             break;
         }
         case UIGestureRecognizerStateChanged: {
-            if(selectedProbe != NULL){
-                float scale = [sender scale];
-                [sender setScale:1];
-                selectedProbe.radius = fmax(selectedProbe.radius * scale, 0.1);
-                [selectedProbe computeOrigVertex];
+            float scale = [sender scale];
+            [sender setScale:1];
+            if(mainImage.fixRadius==false){
+                if(selectedProbe != NULL){
+                    selectedProbe.radius = fmax(selectedProbe.radius * scale, 0.1);
+                    [selectedProbe computeOrigVertex];
+                    if(selectedProbePair != NULL){
+                        selectedProbePair.radius = fmax(selectedProbe.radius * scale, 0.1);
+                        [selectedProbePair computeOrigVertex];
+                    }
+                }else{
+                    for(Probe *probe in mainImage.probes){
+                        probe.radius = fmax(probe.radius * scale, 0.1);
+                        [probe computeOrigVertex];
+                    }
+                }
                 [mainImage deform];
             }
             break;
         }
         case UIGestureRecognizerStateEnded: {
-            selectedProbe = NULL;
+            undoProbe = selectedProbe;
             break;
         }
         default:
@@ -349,15 +429,123 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 // Initialise
 - (IBAction)pushButton_Initialize:(UIBarButtonItem *)sender {
     NSLog(@"Initialize");
-    [mainImage removeProbes];
+    [mainImage initOrigVertices];
+    [mainImage.probes removeAllObjects];
+    [mainImage deform];
+}
+// remove all probes but keep the current deformed image
+- (IBAction)pushRemoveAllProbes:(UIBarButtonItem *)sender{
+    [mainImage freezeProbes];
+    [mainImage.probes removeAllObjects];
 }
 
-// snapshot
+// TODO: undo
+- (IBAction)pushUndo:(UIBarButtonItem *)sender{
+    if(undoProbe == NULL && [mainImage.probes count]>0){
+        [mainImage.probes removeLastObject];
+    }else if([mainImage.probes containsObject:undoProbe]){
+        undoProbe.x = undoX;
+        undoProbe.y = undoY;
+        undoProbe.theta = undoTheta;
+        undoProbe.radius = undoRadius;
+        [undoProbe setPosDx:0.0f Dy:0.0f Dtheta:0.0f];
+        if(selectedProbePair != NULL){
+            selectedProbePair.x = -undoX;
+            selectedProbePair.y = undoY;
+            selectedProbePair.theta = -undoTheta;
+            selectedProbePair.radius = undoRadius;
+            [selectedProbePair setPosDx:0.0f Dy:0.0f Dtheta:0.0f];
+        }
+    }else if(undoProbe != NULL){
+        [mainImage.probes addObject:undoProbe];
+    }
+    NSLog(@"Undo");
+    [mainImage deform];
+}
+
+// change deformation mode
+- (IBAction)pushDeformMode:(UISegmentedControl *)sender{
+    int wm = (int)sender.selectedSegmentIndex;
+    switch(wm){
+        case 0:
+            mainImage.dm = DCNBlend;
+            break;
+        case 1:
+            mainImage.dm = LinearBlend;
+            break;
+        case 2:
+            mainImage.dm = MLS_RIGID;
+            break;
+        case 3:
+            mainImage.dm = MLS_SIM;
+            break;
+    }
+    NSLog(@"deform mode: %d",mainImage.dm);
+    [mainImage deform];
+}
+
+// weighting mode change
+-(IBAction)pushWeightMode:(UISegmentedControl *)sender{
+//    [mainImage removeProbes];
+    int wm = (int)sender.selectedSegmentIndex;
+    switch(wm){
+        case 0:
+            mainImage.wm = EUCLIDEAN;
+            [mainImage euclideanWeighting];
+            break;
+        case 1:
+            mainImage.wm = HARMONIC;
+            [mainImage harmonicWeighting];
+            break;
+        case 2:
+            mainImage.wm = BIHARMONIC;
+            [mainImage harmonicWeighting];
+            break;
+    }
+    [mainImage deform];
+}
+
+// snapshot image and save vertex and probe coordinates into csv
 - (IBAction)pushSaveImg:(UIBarButtonItem *)sender{
     NSLog(@"saving image");
     UIImage* image = [(GLKView*)self.view snapshot];
     UIImageWriteToSavedPhotosAlbum(image, self, @selector(savingImageIsFinished:didFinishSavingWithError:contextInfo:), nil);
+    // set filename from date
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *dir = paths.firstObject;
+    NSDateFormatter *format = [[NSDateFormatter alloc] init];
+    [format setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"ja_JP"]];
+    [format setDateFormat:@"yyyyMMdd-HHmmss"];
+    NSString *StTime = [format stringFromDate:[NSDate date]];
+    NSString *csvfile = [NSString stringWithFormat:@"%@.csv",StTime];
+    NSString *pth = [dir stringByAppendingPathComponent:csvfile];
+    NSLog(@"%@",pth);
+    // construct strings to write
+    NSMutableString* mstr = [[NSMutableString alloc] init];
+    [mstr appendString:@"#vertices x,y\n"];
+    for(int i=0;i<mainImage.numVertices;i++){
+        [mstr appendString:[NSString stringWithFormat:@"%f,%f\n",mainImage.vertices[2*i],mainImage.vertices[2*i+1]]];
+    }
+    [mstr appendString:@"#probes ix,iy,itheta,x,y,theta,radius\n"];
+    for(Probe *probe in mainImage.probes){
+        NSString* str = [NSString stringWithFormat:@"%f,%f,%f,%f,%f,%f,%f\n",probe.ix,probe.iy,probe.itheta,probe.x,probe.y,probe.theta,probe.radius];
+        [mstr appendString:str];
+    }
+    [mstr appendString:@"#closest vertex to each probe\n"];
+    for(Probe *probe in mainImage.probes){
+        int i = probe.closestPt;
+        [mstr appendString:[NSString stringWithFormat:@"%d,%f,%f\n",
+                            i,mainImage.vertices[2*i],mainImage.vertices[2*i+1]]];
+    }
+    // write to file
+    NSData* out_data = [mstr dataUsingEncoding:NSUTF8StringEncoding];
+    if([out_data writeToFile:pth atomically:YES]){
+        NSLog(@"csv saved");
+    }else{
+        NSLog(@"csv save failed");
+    }
 }
+
 - (void) savingImageIsFinished:(UIImage *)_image didFinishSavingWithError:(NSError *)_error contextInfo:(void *)_contextInfo{
     NSMutableString *title = [NSMutableString string];
     NSMutableString *msg = [NSMutableString string];
@@ -368,15 +556,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         [title setString:@"Saved"];
         [msg setString:@"Image saved in Camera Roll"];
     }
-    UIAlertController * ac = [UIAlertController alertControllerWithTitle:title
-                                                                 message:msg
-                                                          preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction * okAction =
-    [UIAlertAction actionWithTitle:@"OK"
-                             style:UIAlertActionStyleDefault
-                           handler:^(UIAlertAction * action) {
-                               NSLog(@"OK button tapped.");
-                           }];
+    UIAlertController * ac = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction * okAction = [UIAlertAction actionWithTitle:@"OK"
+                             style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) { NSLog(@"OK button tapped.");}];
     [ac addAction:okAction];
     [self presentViewController:ac animated:YES completion:nil];
 }
@@ -403,7 +585,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     glDeleteTextures(1, &name);
     UIImage *pImage = [info objectForKey: UIImagePickerControllerOriginalImage];
     [mainImage loadImage:pImage];
-    [mainImage removeProbes];
+//    [mainImage removeProbes];
     [self setupScreen];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -425,26 +607,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self setupScreen];
 }
 
-// weighting mode change
--(IBAction)pushSeg:(UISegmentedControl *)sender{
-    int wm = (int)sender.selectedSegmentIndex;
-    switch(wm){
-        case 0:
-            mainImage.wm=EUCLIDEAN;
-            [mainImage euclideanWeighting];
-            break;
-        case 1:
-            mainImage.wm=HARMONIC;
-            [mainImage harmonicWeighting];
-            break;
-        case 2:
-            mainImage.wm=BIHARMONIC;
-            [mainImage harmonicWeighting];
-            break;
-    }
-    [mainImage deform];
-}
-
 // Camera
 -(IBAction)pushCameraSw:(UISegmentedControl *)sender{
 //    [mainImage removeProbes];
@@ -452,7 +614,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     switch(wm){
         case 0:
             [self stopCamera];
-            [mainImage loadImage:[ UIImage imageNamed:DEFAULTIMAGE ]];
+            [mainImage loadImage:[ UIImage imageNamed:[[self class] images][image_idx]]];
             NSLog(@"Camera OFF");
             break;
         case 1:
@@ -527,8 +689,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 }
 
 // the following is called 30 times per sec
-- (void)captureOutput:(AVCaptureOutput *)captureOutput
-didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection
 {
     CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
@@ -538,25 +699,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     CVPixelBufferLockBaseAddress(imageBuffer, 0);
     CVOpenGLESTextureRef esTexture;
     CVReturn cvError = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-                                                                    textureCache,
-                                                                    imageBuffer,
-                                                                    NULL,
-                                                                    GL_TEXTURE_2D,
-                                                                    GL_RGBA,
-                                                                    bufferWidth, bufferHeight,
-                                                                    GL_BGRA,
-                                                                    GL_UNSIGNED_BYTE,
-                                                                    0,
-                                                                    &esTexture);
-    
-    if(cvError){
-        NSLog(@"CVOpenGLESTextureCacheCreateTextureFromImage failed");
-    }
+                                                                    textureCache,imageBuffer,NULL,
+                                                                    GL_TEXTURE_2D,GL_RGBA,bufferWidth, bufferHeight,
+                                                                    GL_BGRA,GL_UNSIGNED_BYTE,0,&esTexture);
+    if(cvError) NSLog(@"CVOpenGLESTextureCacheCreateTextureFromImage failed");
     cameraTextureName = CVOpenGLESTextureGetName(esTexture);
     CVOpenGLESTextureCacheFlush(textureCache, 0);
-    if(textureObject)
-        CFRelease(textureObject);
-    
+    if(textureObject) CFRelease(textureObject);
     textureObject = esTexture;
     CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
 }
@@ -606,13 +755,125 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [mainImage deform];
 }
 
-/**
- *  termination procedure
- */
-- (void)viewDidUnload {
-    [super viewDidUnload];
-    [self tearDownGL];
-    self.context = nil;
+// load csv
+- (IBAction)loadCSV:(id)sender{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *filename = [[paths objectAtIndex:0] stringByAppendingPathComponent:self.fileViewController.selectedPath];
+    NSError *error;
+    NSString *csv = [NSString stringWithContentsOfFile:filename encoding:NSUTF8StringEncoding error:&error];
+    if(error)return;
+//    NSLog(@"contents: %@",csv);
+
+    [mainImage.probes removeAllObjects];
+
+    // read the file
+    NSScanner *scanner = [NSScanner scannerWithString:csv];
+    NSCharacterSet *chSet = [NSCharacterSet newlineCharacterSet];
+    NSString *line;
+    int reading_mode = 0;
+    int i=0;
+    while (![scanner isAtEnd]) {
+        [scanner scanUpToCharactersFromSet:chSet intoString:&line];
+        if ([line hasPrefix:@"#vertices"]){
+            reading_mode = 1;
+            NSLog(@"loading vertices..");
+            continue;
+        }else if ([line hasPrefix:@"#probes"]){
+            reading_mode = 2;
+            continue;
+        }else if ([line hasPrefix:@"#"]){
+            break;
+        }
+        NSArray *array = [line componentsSeparatedByString:@","];
+        [scanner scanCharactersFromSet:chSet intoString:NULL];
+        switch (reading_mode) {
+            case 1:{
+                mainImage.vertices[2*i] = [array[0] floatValue];
+                mainImage.vertices[2*i+1] = [array[1] floatValue];
+                i++;
+                break;
+            }
+            case 2:{
+                CGPoint p;
+                p.x = [array[0] floatValue];
+                p.y = [array[1] floatValue];
+                Probe *newprobe = [mainImage makeNewProbeWithCGPoint:p];
+                newprobe.itheta = [array[2] floatValue];
+                newprobe.radius = [array[6] floatValue];
+                [newprobe computeOrigVertex];
+                [newprobe setPosX:[array[3] floatValue] Y:[array[4] floatValue] Theta:[array[5] floatValue]];
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    NSLog(@"finish loading: %@",filename);
+    undoProbe = selectedProbe = NULL;
+    [mainImage freezeProbes];
 }
+
+// file selection dialog
+- (IBAction)pushPickFile:(id)sender{
+    [self.view addSubview:self.fileViewController.view];
+    CGPoint center = self.fileViewController.contentView.center;
+    UIView* view = self.fileViewController.contentView;
+    
+    view.transform = CGAffineTransformScale(CGAffineTransformIdentity,0.5f,0.5f);
+    view.center = center;
+    [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^{ view.transform = CGAffineTransformIdentity; view.center = center;}
+                     completion:nil];
+    [self.fileViewController loadPaths];
+}
+
+// load preset images
+- (IBAction)pushCycleImg:(id)sender{
+    [self stopCamera];
+    GLuint name = mainImage.texture.name;
+    glDeleteTextures(1, &name);
+    NSArray *imgs = [[self class] images];
+    image_idx = image_idx==[imgs count]-1 ? 0 : image_idx+1;
+    [mainImage loadImage:[ UIImage imageNamed:[[self class] images][image_idx]]];
+    [self setupScreen];
+//    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+// symmetric edit switch
+-(IBAction)pushSymMode:(UISegmentedControl *)sender{
+//    [mainImage removeProbes];
+    int wm = (int)sender.selectedSegmentIndex;
+    mainImage.symmetric = (wm==0);
+    [mainImage deform];
+}
+
+// symmetric edit switch
+-(IBAction)pushRadFix:(UISegmentedControl *)sender{
+    int wm = (int)sender.selectedSegmentIndex;
+    mainImage.fixRadius = (wm==0);
+}
+
+
+// probe size multiplier slider
+- (IBAction)prbSizeSliderChanged:(id)sender{
+    mainImage.prbSizeMultiplier = prbSizeSl.value;
+    for(Probe *probe in mainImage.probes){
+        probe.szMultiplier = mainImage.prbSizeMultiplier;
+        [probe computeOrigVertex];
+    }
+}
+
+// show and hide probes
+- (IBAction)pushShowPrb:(UIBarButtonItem *)sender{
+    if(mainImage.showPrb){
+        sender.title = @"Show";
+        mainImage.showPrb = false;
+    }else{
+        sender.title = @"Hide";
+        mainImage.showPrb = true;
+    }
+    NSLog(@"show probe: %d",mainImage.showPrb);
+}
+
 
 @end

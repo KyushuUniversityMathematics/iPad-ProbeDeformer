@@ -23,8 +23,9 @@ typedef SimplicialLDLT<SpMat> SpSolver;
 //typedef SparseLU<SpMat, COLAMDOrdering<int>> SpSolver;
 typedef Triplet<float> T;
 typedef enum _weightMode {EUCLIDEAN, HARMONIC, BIHARMONIC} weightMode;
+typedef enum _deformMode {DCNBlend,LinearBlend,MLS_RIGID,MLS_SIM} deformMode;
 
-@interface ImageVertices : NSObject {
+@interface ImageVertices : NSObject  {
     // dcn of initial vertex position
     DCN<float> *origVertex;
     @public
@@ -33,8 +34,11 @@ typedef enum _weightMode {EUCLIDEAN, HARMONIC, BIHARMONIC} weightMode;
 // mesh division
 @property GLuint verticalDivisions,horizontalDivisions;
 @property int indexArrsize,numVertices;
-@property weightMode wm;
 @property float constraintWeight;
+// switch
+@property BOOL showPrb;
+@property weightMode wm;
+@property deformMode dm;
 
 // image size
 @property float image_width,image_height;
@@ -46,24 +50,24 @@ typedef enum _weightMode {EUCLIDEAN, HARMONIC, BIHARMONIC} weightMode;
 
 // array of probes
 @property NSMutableArray *probes;
-@property float probeRadius;
+@property float probeRadius,prbSizeMultiplier;
 
+// symmetric
+@property BOOL symmetric,fixRadius;
 
 // memory
 - (void)dealloc;
-
 // init
 - (ImageVertices*)initWithVDiv:(GLuint)lverticalDivisions HDiv:(GLuint)lhorizontalDivisions;
 -(void) loadImage:(UIImage*)pImage;
-
+- (id)copyWithZone:(NSZone*)zone;
 // deformation according to probes
 - (void)deform;
 // add probe
-- (void)makeNewProbeWithCGPoint:(CGPoint)p;
+- (Probe *)makeNewProbeWithCGPoint:(CGPoint)p;
 -(void)initOrigVertices;
 // initialize probes
 -(void) freezeProbes;
--(void) removeProbes;
 // weighting
 -(void) harmonicWeighting;
 -(void) euclideanWeighting;

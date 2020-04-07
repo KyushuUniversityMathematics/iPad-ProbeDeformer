@@ -18,18 +18,23 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import "ImageVertices.h"
 #import "Probe.h"
+#import "FileViewController.h"
 
 @interface ViewController : GLKViewController
 <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIGestureRecognizerDelegate,
-        AVCaptureVideoDataOutputSampleBufferDelegate>{
+        AVCaptureVideoDataOutputSampleBufferDelegate,FileViewControllerDelegate>{
     // mesh data
     ImageVertices *mainImage;
     
     // is the camera on?
     BOOL cameraMode;
+            
+    // index of current image
+    int image_idx;
     
     // currently manipulated probe
-    Probe *selectedProbe;
+    Probe *selectedProbe, *selectedProbePair, *undoProbe;
+    GLfloat undoX,undoY,undoTheta,undoRadius;
     // probe texture
     GLKTextureInfo *probeTexture;
     
@@ -49,15 +54,24 @@
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *cameraSw;
-@property (weak, nonatomic) IBOutlet UISegmentedControl *probeSw;
+@property(nonatomic, strong) FileViewController* fileViewController;
+@property (nonatomic, retain) IBOutlet UISlider *prbSizeSl;
 
 - (void)setupGL;
 - (void)tearDownGL;
+- (void)gestureBegan:(CGPoint)p;
 - (IBAction)pushButton_ReadImage:(UIBarButtonItem *)sender;
 - (IBAction)pushButton_Initialize:(UIBarButtonItem *)sender;
 - (IBAction)unwindToFirstScene:(UIStoryboardSegue *)unwindSegue;
-- (IBAction)pushSeg:(UISegmentedControl *)sender;
 - (IBAction)pushCameraSw:(UISegmentedControl *)sender;
 - (IBAction)pushSaveImg:(UIBarButtonItem *)sender;
-
+- (IBAction)pushDeformMode:(UISegmentedControl *)sender;
+- (IBAction)pushWeightMode:(UISegmentedControl *)sender;
+- (IBAction)pushUndo:(UIBarButtonItem *)sender;
+- (IBAction)pushPickFile:(UIBarButtonItem *)sender;
+- (IBAction)pushCycleImg:(UIBarButtonItem *)sender;
+- (IBAction)pushRemoveAllProbes:(UIBarButtonItem *)sender;
+- (IBAction)pushRadFix:(UISegmentedControl *)sender;
+- (IBAction)pushSymMode:(UISegmentedControl *)sender;
+- (IBAction)prbSizeSliderChanged:(id)sender;
 @end
