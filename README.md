@@ -15,3 +15,5 @@ Mathematical Progress in Expressive Image Synthesis I, pp. 131--138, Springer-Ja
 http://link.springer.com/book/10.1007/978-4-431-55007-5
 
 An updated version is available at http://arxiv.org/abs/1601.01754
+
+![Video](https://github.com/KyushuUniversityMathematics/iPad-ProbeDeformer/blob/master/DCN-ouchi.gif?raw=true)
